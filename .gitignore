@@ -1,0 +1,9 @@
+.gradle/
+.gradle-bootstrap/
+gradle-dist/
+local.properties
+**/build/
+.idea/
+*.iml
+*.zip
+*.jar

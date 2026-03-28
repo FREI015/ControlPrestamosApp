@@ -1,0 +1,5 @@
+﻿<resources>
+    <string name="app_name">Control de Préstamos</string>
+    <string name="home_title">Panel de cartera</string>
+    <string name="home_subtitle">Resumen quincenal, mensual, trimestral y semestral</string>
+</resources>
