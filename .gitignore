@@ -1,4 +1,4 @@
-.gradle/
+﻿.gradle/
 .gradle-bootstrap/
 gradle-dist/
 local.properties
@@ -7,3 +7,9 @@ local.properties
 *.iml
 *.zip
 *.jar
+backup_*/
+*.bak
+build_*.txt
+*.tmp
+Thumbs.db
+.DS_Store
