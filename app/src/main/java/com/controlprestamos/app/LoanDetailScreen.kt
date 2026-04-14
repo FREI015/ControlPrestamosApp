@@ -1,10 +1,17 @@
 ﻿package com.controlprestamos.app
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -17,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -75,15 +83,15 @@ fun LoanDetailScreen(
     AppConfirmDialog(
         visible = confirmDelete,
         title = "Eliminar préstamo",
-        message = "¿Seguro que deseas eliminar el préstamo de ${currentLoan.fullName.ifBlank { "este cliente" }}? Esta acción no se puede deshacer.",
+        message = "¿Seguro que deseas enviar a papelera el préstamo de ${currentLoan.fullName.ifBlank { "este cliente" }}? Podrás restaurarlo desde la papelera durante 30 días.",
         confirmText = "Eliminar",
         dismissText = "Cancelar",
         onConfirm = {
-            sessionStore.deleteLoan(currentLoan.id)
+            sessionStore.softDeleteLoan(currentLoan.id)
             sessionStore.setActiveLoanId("")
             confirmDelete = false
-            navController.navigate("loans") {
-                popUpTo("loans") { inclusive = true }
+            navController.navigate(AppRoutes.Loans) {
+                popUpTo(AppRoutes.Loans) { inclusive = true }
                 launchSingleTop = true
             }
         },
@@ -139,29 +147,87 @@ fun LoanDetailScreen(
         }
 
         AppSectionCard {
-            Text("Resumen del préstamo", style = MaterialTheme.typography.titleMedium)
+            Text("Identidad del préstamo", style = MaterialTheme.typography.titleMedium)
 
-            AppLabelValue("Teléfono", currentLoan.phone.ifBlank { "-" })
-            AppLabelValue("Cédula", currentLoan.idNumber.ifBlank { "-" })
-            AppLabelValue("Estado", detailStatusLabel(currentLoan))
-            AppLabelValue("Préstamo", currentLoan.loanDate.ifBlank { "-" })
-            AppLabelValue("Vencimiento", currentLoan.dueDate.ifBlank { "-" })
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    AppMutedText("Cliente")
+                    Text(
+                        text = currentLoan.fullName.ifBlank { "-" },
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
 
-            HorizontalDivider()
-
-            AppLabelValue("Prestado", formatMoney(currentLoan.loanAmount))
-            AppLabelValue("Ganancia", formatMoney(currentLoan.interestAmount()))
-            AppLabelValue("Total", formatMoney(currentLoan.totalAmount()))
-            AppLabelValue("Abonado", formatMoney(currentLoan.paidAmount))
-            AppLabelValue("Pendiente", formatMoney(currentLoan.pendingAmount()))
-
-            if (currentLoan.exchangeRate.isNotBlank()) {
-                AppLabelValue("Tasa", currentLoan.exchangeRate)
+                AppStatusChip(detailStatusLabelRefined(currentLoan))
             }
 
-            if (currentLoan.conditions.isNotBlank()) {
-                HorizontalDivider()
-                AppMutedText(currentLoan.conditions)
+            BoxWithConstraints(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val cardWidth = (maxWidth - 12.dp) / 2
+
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    DetailInfoCardRefined("Cédula", currentLoan.idNumber.ifBlank { "-" }, Modifier.width(cardWidth))
+                    DetailInfoCardRefined("Teléfono", currentLoan.phone.ifBlank { "-" }, Modifier.width(cardWidth))
+                }
+            }
+        }
+
+        AppSectionCard {
+            Text("Estado del préstamo", style = MaterialTheme.typography.titleMedium)
+
+            BoxWithConstraints(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val cardWidth = (maxWidth - 12.dp) / 2
+
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        DetailInfoCardRefined("Préstamo", currentLoan.loanDate.ifBlank { "-" }, Modifier.width(cardWidth))
+                        DetailInfoCardRefined("Vencimiento", currentLoan.dueDate.ifBlank { "-" }, Modifier.width(cardWidth))
+                    }
+
+                    if (currentLoan.exchangeRate.isNotBlank()) {
+                        DetailInfoCardRefined("Tasa", currentLoan.exchangeRate, Modifier.fillMaxWidth())
+                    }
+
+                    if (currentLoan.conditions.isNotBlank()) {
+                        DetailInfoCardRefined("Condiciones", currentLoan.conditions, Modifier.fillMaxWidth())
+                    }
+                }
+            }
+        }
+
+        AppSectionCard {
+            Text("Resumen financiero", style = MaterialTheme.typography.titleMedium)
+
+            BoxWithConstraints(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val cardWidth = (maxWidth - 12.dp) / 2
+
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        MoneyCardRefined("Prestado", formatMoney(currentLoan.loanAmount), Modifier.width(cardWidth))
+                        MoneyCardRefined("Ganancia", formatMoney(currentLoan.interestAmount()), Modifier.width(cardWidth))
+                    }
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        MoneyCardRefined("Total", formatMoney(currentLoan.totalAmount()), Modifier.width(cardWidth))
+                        MoneyCardRefined("Abonado", formatMoney(currentLoan.paidAmount), Modifier.width(cardWidth))
+                    }
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        MoneyCardRefined("Pendiente", formatMoney(currentLoan.pendingAmount()), Modifier.width(cardWidth))
+                        Spacer(modifier = Modifier.width(cardWidth))
+                    }
+                }
             }
         }
 
@@ -236,34 +302,34 @@ fun LoanDetailScreen(
         AppSectionCard {
             Text("Acciones del préstamo", style = MaterialTheme.typography.titleMedium)
 
-            AppPrimaryButton(
-                text = "Preparar cobro",
-                onClick = { navController.navigate("loanCollectionNotice") }
-            )
+            BoxWithConstraints(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val cardWidth = (maxWidth - 12.dp) / 2
 
-            AppSecondaryButton(
-                text = "Editar préstamo",
-                onClick = {
-                    sessionStore.setActiveLoanId(currentLoan.id)
-                    navController.navigate("editLoan")
-                }
-            )
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        DetailActionCardRefined("Cobro", Modifier.width(cardWidth)) {
+                            navController.navigate(AppRoutes.LoanCollectionNotice)
+                        }
+                        DetailActionCardRefined("Editar préstamo", Modifier.width(cardWidth)) {
+                            sessionStore.setActiveLoanId(currentLoan.id)
+                            navController.navigate(AppRoutes.EditLoan)
+                        }
+                    }
 
-            AppSecondaryButton(
-                text = "Marcar como cobrado",
-                onClick = {
-                    feedback = ""
-                    confirmCollected = true
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        DetailActionCardRefined("Marcar como cobrado", Modifier.width(cardWidth)) {
+                            feedback = ""
+                            confirmCollected = true
+                        }
+                        DetailActionCardRefined("Marcar como perdido", Modifier.width(cardWidth)) {
+                            feedback = ""
+                            confirmLost = true
+                        }
+                    }
                 }
-            )
-
-            AppSecondaryButton(
-                text = "Marcar como perdido",
-                onClick = {
-                    feedback = ""
-                    confirmLost = true
-                }
-            )
+            }
         }
 
         AppSectionCard {
@@ -314,13 +380,82 @@ fun LoanDetailScreen(
             )
         }
 
-        AppBottomBack(
-            onClick = { navController.popBackStack() }
+        AppBottomBack(onClick = { navController.popBackStack() })
+    }
+}
+
+@Composable
+private fun DetailInfoCardRefined(
+    title: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = AppShapes.field
+            )
+            .padding(horizontal = 12.dp, vertical = 10.dp)
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            AppMutedText(title)
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
+private fun MoneyCardRefined(
+    title: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = AppShapes.field
+            )
+            .padding(horizontal = 12.dp, vertical = 12.dp)
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            AppMutedText(title)
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}
+
+@Composable
+private fun DetailActionCardRefined(
+    title: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = AppShapes.field
+            )
+            .clickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 14.dp)
+    ) {
+        Text(
+            text = title,
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
 
-private fun detailStatusLabel(loan: ManualLoanData): String {
+private fun detailStatusLabelRefined(loan: ManualLoanData): String {
     return when {
         loan.status == "COBRADO" -> "COBRADO"
         loan.status == "PERDIDO" -> "PERDIDO"
@@ -328,3 +463,4 @@ private fun detailStatusLabel(loan: ManualLoanData): String {
         else -> "ACTIVO"
     }
 }
+

@@ -2,17 +2,19 @@
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -20,70 +22,177 @@ import java.time.LocalDate
 import java.time.format.DateTimeParseException
 import java.util.Locale
 
+private data class DashboardMainMetric(
+    val title: String,
+    val value: String,
+    val subtitle: String
+)
+
+private data class DashboardHealthMetric(
+    val title: String,
+    val value: String,
+    val subtitle: String
+)
+
+private data class DashboardPeriodSummary(
+    val label: String,
+    val operations: Int,
+    val loaned: Double,
+    val projected: Double,
+    val total: Double
+)
+
 @Composable
 fun DashboardScreen(
     navController: NavController,
     sessionStore: SessionStore
 ) {
     val loans = sessionStore.readLoans()
-
     val today = LocalDate.now()
+    val tomorrow = today.plusDays(1)
+
+    val currentFortnightStart = fortnightStartSafe(today)
+    val currentFortnightEnd = fortnightEndSafe(today)
+    val previousFortnightEnd = currentFortnightStart.minusDays(1)
+    val previousFortnightStart = fortnightStartSafe(previousFortnightEnd)
+
     val activeLoans = loans.filter { it.status == "ACTIVO" && !it.isOverdue() }
     val overdueLoans = loans.filter { it.status == "ACTIVO" && it.isOverdue() }
     val collectedLoans = loans.filter { it.status == "COBRADO" }
     val lostLoans = loans.filter { it.status == "PERDIDO" }
+    val nonLostLoans = loans.filter { it.status != "PERDIDO" }
 
-    val capitalLoaned = loans.filter { it.status != "PERDIDO" }.sumOf { it.loanAmount }
-    val projectedProfit = loans.filter { it.status != "PERDIDO" }.sumOf { it.interestAmount() }
-    val totalToCollect = loans.filter { it.status != "PERDIDO" }.sumOf { it.totalAmount() }
+    val capitalLoaned = nonLostLoans.sumOf { it.loanAmount }
+    val projectedProfit = nonLostLoans.sumOf { it.interestAmount() }
+    val totalToCollect = nonLostLoans.sumOf { it.totalAmount() }
     val totalPaid = loans.sumOf { it.paidAmount }
-    val totalPending = loans.filter { it.status != "PERDIDO" }.sumOf { it.pendingAmount() }
-    val overdueAmount = overdueLoans.sumOf { it.pendingAmount() }
+    val totalPending = nonLostLoans.sumOf { it.pendingAmount() }
+    val overduePending = overdueLoans.sumOf { it.pendingAmount() }
 
-    val progress = if (totalToCollect <= 0.0) {
-        0.0
-    } else {
-        (totalPaid / totalToCollect).coerceIn(0.0, 1.0)
+    val recoveryPercent = if (totalToCollect > 0.0) (totalPaid / totalToCollect) * 100.0 else 0.0
+    val averageTicket = if (nonLostLoans.isNotEmpty()) capitalLoaned / nonLostLoans.size else 0.0
+
+    val dueTodayCount = activeLoans.count { parseDashboardDateSafe(it.dueDate) == today }
+    val dueTomorrowCount = activeLoans.count { parseDashboardDateSafe(it.dueDate) == tomorrow }
+
+    val recoveredPreviousFortnight = loans.sumOf { loan ->
+        sessionStore.readLoanPaymentHistory(loan.id)
+            .filter { record ->
+                val date = parseDashboardDateSafe(record.paymentDate)
+                date != null && !date.isBefore(previousFortnightStart) && !date.isAfter(previousFortnightEnd)
+            }
+            .sumOf { it.amount }
     }
 
-    val upcomingLoans = loans
-        .filter { it.status == "ACTIVO" }
-        .mapNotNull { loan ->
-            val due = parseDashboardDate(loan.dueDate) ?: return@mapNotNull null
-            loan to due
+    val investedCurrentFortnight = loans
+        .filter {
+            val loanDate = parseDashboardDateSafe(it.loanDate)
+            loanDate != null && !loanDate.isBefore(currentFortnightStart) && !loanDate.isAfter(currentFortnightEnd)
         }
-        .filter { (_, due) -> !due.isBefore(today) }
-        .sortedBy { (_, due) -> due }
-        .take(5)
+        .sumOf { it.loanAmount }
 
-    val topPendingClients = loans
-        .filter { it.status != "PERDIDO" && it.pendingAmount() > 0.0 }
-        .sortedByDescending { it.pendingAmount() }
-        .take(5)
+    val reinvestedFortnightAmount = minOf(recoveredPreviousFortnight, investedCurrentFortnight)
+    val reinvestedFortnightPercent = if (recoveredPreviousFortnight > 0.0) {
+        (reinvestedFortnightAmount / recoveredPreviousFortnight) * 100.0
+    } else {
+        0.0
+    }
 
-    val todayMetrics = loans.filter { parseDashboardDate(it.loanDate) == today }
-    val weekMetrics = loans.filter { matchesThisWeek(parseDashboardDate(it.loanDate), today) }
-    val fortnightMetrics = loans.filter { matchesThisFortnight(parseDashboardDate(it.loanDate), today) }
-    val monthMetrics = loans.filter { matchesThisMonth(parseDashboardDate(it.loanDate), today) }
+    val todayLoans = loans.filter { parseDashboardDateSafe(it.loanDate) == today }
+    val weekLoans = loans.filter { matchesThisWeekSafe(parseDashboardDateSafe(it.loanDate), today) }
+    val fortnightLoans = loans.filter { matchesThisFortnightSafe(parseDashboardDateSafe(it.loanDate), today) }
+    val monthLoans = loans.filter { matchesThisMonthSafe(parseDashboardDateSafe(it.loanDate), today) }
+
+    val mainMetrics = listOf(
+        DashboardMainMetric("Prestado", formatMoney(capitalLoaned), "Capital activo"),
+        DashboardMainMetric("A cobrar", formatMoney(totalToCollect), "Total esperado"),
+        DashboardMainMetric("Pagado", formatMoney(totalPaid), "Monto abonado"),
+        DashboardMainMetric("Pendiente", formatMoney(totalPending), "Saldo actual")
+    )
+
+    val healthMetrics = listOf(
+        DashboardHealthMetric(
+            "Recuperación",
+            formatPercentCompact(recoveryPercent),
+            "Efectividad actual"
+        ),
+        DashboardHealthMetric(
+            "Reinvertido",
+            formatMoney(reinvestedFortnightAmount),
+            "${formatPercentCompact(reinvestedFortnightPercent)} de la quincena anterior"
+        ),
+        DashboardHealthMetric("En mora", formatMoney(overduePending), "Saldo vencido"),
+        DashboardHealthMetric("Vencen hoy", dueTodayCount.toString(), "Cobros del día"),
+        DashboardHealthMetric("Vencen mañana", dueTomorrowCount.toString(), "Cobros próximos"),
+        DashboardHealthMetric("Ticket promedio", formatMoney(averageTicket), "Promedio por préstamo"),
+        DashboardHealthMetric("Ganancia", formatMoney(projectedProfit), "Proyección")
+    )
+
+    val stateMetrics = listOf(
+        DashboardHealthMetric("Activos", activeLoans.size.toString(), "Operando"),
+        DashboardHealthMetric("Vencidos", overdueLoans.size.toString(), "Con atraso"),
+        DashboardHealthMetric("Cobrados", collectedLoans.size.toString(), "Cerrados"),
+        DashboardHealthMetric("Perdidos", lostLoans.size.toString(), "Marcados")
+    )
+
+    val periodOptions = listOf(
+        DashboardPeriodSummary(
+            label = "Hoy",
+            operations = todayLoans.size,
+            loaned = todayLoans.sumOf { it.loanAmount },
+            projected = todayLoans.sumOf { it.interestAmount() },
+            total = todayLoans.sumOf { it.totalAmount() }
+        ),
+        DashboardPeriodSummary(
+            label = "Semana",
+            operations = weekLoans.size,
+            loaned = weekLoans.sumOf { it.loanAmount },
+            projected = weekLoans.sumOf { it.interestAmount() },
+            total = weekLoans.sumOf { it.totalAmount() }
+        ),
+        DashboardPeriodSummary(
+            label = "Quincena",
+            operations = fortnightLoans.size,
+            loaned = fortnightLoans.sumOf { it.loanAmount },
+            projected = fortnightLoans.sumOf { it.interestAmount() },
+            total = fortnightLoans.sumOf { it.totalAmount() }
+        ),
+        DashboardPeriodSummary(
+            label = "Mes",
+            operations = monthLoans.size,
+            loaned = monthLoans.sumOf { it.loanAmount },
+            projected = monthLoans.sumOf { it.interestAmount() },
+            total = monthLoans.sumOf { it.totalAmount() }
+        )
+    )
+
+    var selectedPeriod by remember { mutableStateOf(periodOptions.first()) }
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            AppTopBack(title = "Resumen de operaciones")
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                AppScreenTitle("Creditime")
+                AppMutedText("Resumen operativo")
+            }
         }
 
         item {
             AppSectionCard {
-                Text(currentPeriodText(), color = MaterialTheme.colorScheme.primary)
-                AppMutedText(
-                    if (loans.isEmpty()) {
-                        "Todavía no hay préstamos cargados."
-                    } else {
-                        "Resumen operativo calculado con tus datos reales."
+                Text(
+                    text = "Resumen principal",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                DashboardMetricGrid(
+                    metrics = mainMetrics.map {
+                        Triple(it.title, it.value, it.subtitle)
                     }
                 )
             }
@@ -91,7 +200,41 @@ fun DashboardScreen(
 
         item {
             AppSectionCard {
-                Text("Accesos rápidos", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = "Salud de la cartera",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                DashboardMetricGrid(
+                    metrics = healthMetrics.map {
+                        Triple(it.title, it.value, it.subtitle)
+                    }
+                )
+            }
+        }
+
+        item {
+            AppSectionCard {
+                Text(
+                    text = "Estados",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                DashboardMetricGrid(
+                    metrics = stateMetrics.map {
+                        Triple(it.title, it.value, it.subtitle)
+                    }
+                )
+            }
+        }
+
+        item {
+            AppSectionCard {
+                Text(
+                    text = "Resumen por período",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                AppMutedText("Selecciona el tramo de tiempo que quieres revisar.")
 
                 Row(
                     modifier = Modifier
@@ -99,207 +242,22 @@ fun DashboardScreen(
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    AppFilterChip("Nuevo préstamo", false) {
-                        navController.navigate("newLoan")
-                    }
-
-                    AppFilterChip("Control", false) {
-                        navController.navigate("loans")
-                    }
-
-                    AppFilterChip("Historial", false) {
-                        navController.navigate("history")
-                    }
-
-                    AppFilterChip("Lista negra", false) {
-                        navController.navigate("blacklist")
-                    }
-
-                    AppFilterChip("Preparar cobro", false) {
-                        val preferredLoan = overdueLoans.firstOrNull() ?: activeLoans.firstOrNull()
-                        if (preferredLoan != null) {
-                            sessionStore.setActiveLoanId(preferredLoan.id)
-                            navController.navigate("loanCollectionNotice")
-                        } else {
-                            navController.navigate("loans")
-                        }
-                    }
-                }
-            }
-        }
-
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                AppMetricCard(
-                    title = "Capital prestado",
-                    value = formatMoney(capitalLoaned),
-                    subtitle = "Sin perdidos",
-                    modifier = Modifier.weight(1f)
-                )
-                AppMetricCard(
-                    title = "Ganancia proyectada",
-                    value = formatMoney(projectedProfit),
-                    subtitle = "Interés estimado",
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                AppMetricCard(
-                    title = "Total a cobrar",
-                    value = formatMoney(totalToCollect),
-                    subtitle = "Capital + ganancia",
-                    modifier = Modifier.weight(1f)
-                )
-                AppMetricCard(
-                    title = "Pagado",
-                    value = formatMoney(totalPaid),
-                    subtitle = "Recuperado",
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                AppMetricCard(
-                    title = "Pendiente",
-                    value = formatMoney(totalPending),
-                    subtitle = "Saldo actual",
-                    modifier = Modifier.weight(1f)
-                )
-                AppMetricCard(
-                    title = "Monto vencido",
-                    value = formatMoney(overdueAmount),
-                    subtitle = "Solo atrasados",
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-
-        item {
-            AppSectionCard {
-                Text("Estados", style = MaterialTheme.typography.titleMedium)
-
-                AppMutedText("Activos: ${activeLoans.size}")
-                AppMutedText("Vencidos: ${overdueLoans.size}")
-                AppMutedText("Cobrados: ${collectedLoans.size}")
-                AppMutedText("Perdidos: ${lostLoans.size}")
-
-                HorizontalDivider()
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Avance de cobro")
-                    Text("${(progress * 100).toInt()}%")
-                }
-
-                AppMutedText("Recuperado: ${formatMoney(totalPaid)} de ${formatMoney(totalToCollect)}")
-            }
-        }
-
-        item {
-            AppSectionCard {
-                Text("Próximos vencimientos", style = MaterialTheme.typography.titleMedium)
-
-                if (upcomingLoans.isEmpty()) {
-                    AppMutedText("No hay vencimientos próximos.")
-                } else {
-                    upcomingLoans.forEachIndexed { index, pair ->
-                        val loan = pair.first
-                        val due = pair.second
-
-                        if (index > 0) {
-                            HorizontalDivider()
-                        }
-
-                        Text(loan.fullName.ifBlank { "Sin nombre" })
-                        AppMutedText("Vence: $due")
-                        AppMutedText("Pendiente: ${formatMoney(loan.pendingAmount())}")
-
-                        AppSecondaryButton(
-                            text = "Abrir préstamo",
-                            onClick = {
-                                sessionStore.setActiveLoanId(loan.id)
-                                navController.navigate("loanDetail")
-                            }
+                    periodOptions.forEach { option ->
+                        AppFilterChip(
+                            label = option.label,
+                            selected = selectedPeriod.label == option.label,
+                            onClick = { selectedPeriod = option }
                         )
                     }
                 }
-            }
-        }
 
-        item {
-            AppSectionCard {
-                Text("Clientes con mayor saldo pendiente", style = MaterialTheme.typography.titleMedium)
-
-                if (topPendingClients.isEmpty()) {
-                    AppMutedText("No hay saldos pendientes actualmente.")
-                } else {
-                    topPendingClients.forEachIndexed { index, loan ->
-                        if (index > 0) {
-                            HorizontalDivider()
-                        }
-
-                        Text(loan.fullName.ifBlank { "Sin nombre" })
-                        if (loan.phone.isNotBlank()) {
-                            AppMutedText("Teléfono: ${loan.phone}")
-                        }
-                        AppMutedText("Pendiente: ${formatMoney(loan.pendingAmount())}")
-
-                        AppSecondaryButton(
-                            text = "Ver detalle",
-                            onClick = {
-                                sessionStore.setActiveLoanId(loan.id)
-                                navController.navigate("loanDetail")
-                            }
-                        )
-                    }
-                }
-            }
-        }
-
-        item {
-            AppSectionCard {
-                Text("Resumen por período", style = MaterialTheme.typography.titleMedium)
-
-                DashboardPeriodBlock(
-                    title = "Hoy",
-                    loans = todayMetrics
-                )
-
-                HorizontalDivider()
-
-                DashboardPeriodBlock(
-                    title = "Semana",
-                    loans = weekMetrics
-                )
-
-                HorizontalDivider()
-
-                DashboardPeriodBlock(
-                    title = "Quincena",
-                    loans = fortnightMetrics
-                )
-
-                HorizontalDivider()
-
-                DashboardPeriodBlock(
-                    title = "Mes",
-                    loans = monthMetrics
+                DashboardMetricGrid(
+                    metrics = listOf(
+                        Triple("Operaciones", selectedPeriod.operations.toString(), "Cantidad"),
+                        Triple("Prestado", formatMoney(selectedPeriod.loaned), "Capital"),
+                        Triple("Ganancia", formatMoney(selectedPeriod.projected), "Proyección"),
+                        Triple("Total", formatMoney(selectedPeriod.total), "Esperado")
+                    )
                 )
             }
         }
@@ -307,27 +265,40 @@ fun DashboardScreen(
 }
 
 @Composable
-private fun DashboardPeriodBlock(
-    title: String,
-    loans: List<ManualLoanData>
+private fun DashboardMetricGrid(
+    metrics: List<Triple<String, String, String>>
 ) {
-    Text(title, style = MaterialTheme.typography.titleSmall)
-    AppMutedText("Cantidad: ${loans.size}")
-    AppMutedText("Prestado: ${formatMoney(loans.sumOf { it.loanAmount })}")
-    AppMutedText("Ganancia proyectada: ${formatMoney(loans.sumOf { it.interestAmount() })}")
-    AppMutedText("Total: ${formatMoney(loans.sumOf { it.totalAmount() })}")
-}
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        val cardWidth = (maxWidth - 12.dp) / 2
 
-private fun currentPeriodText(): String {
-    val now = LocalDate.now()
-    return if (now.dayOfMonth <= 15) {
-        "Quincena actual: ${now.withDayOfMonth(1)} - ${now.withDayOfMonth(15)}"
-    } else {
-        "Quincena actual: ${now.withDayOfMonth(16)} - ${now.withDayOfMonth(now.lengthOfMonth())}"
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            metrics.chunked(2).forEach { rowItems ->
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    rowItems.forEach { item ->
+                        AppMetricCard(
+                            title = item.first,
+                            value = item.second,
+                            subtitle = item.third,
+                            modifier = Modifier.width(cardWidth)
+                        )
+                    }
+
+                    if (rowItems.size == 1) {
+                        Spacer(modifier = Modifier.width(cardWidth))
+                    }
+                }
+            }
+        }
     }
 }
 
-private fun parseDashboardDate(value: String): LocalDate? {
+private fun parseDashboardDateSafe(value: String): LocalDate? {
     return try {
         LocalDate.parse(value)
     } catch (_: DateTimeParseException) {
@@ -335,37 +306,34 @@ private fun parseDashboardDate(value: String): LocalDate? {
     }
 }
 
-private fun matchesThisWeek(date: LocalDate?, today: LocalDate): Boolean {
+private fun matchesThisWeekSafe(date: LocalDate?, today: LocalDate): Boolean {
     if (date == null) return false
     val start = today.minusDays(today.dayOfWeek.value.toLong() - 1L)
     val end = start.plusDays(6)
     return !date.isBefore(start) && !date.isAfter(end)
 }
 
-private fun matchesThisFortnight(date: LocalDate?, today: LocalDate): Boolean {
+private fun matchesThisFortnightSafe(date: LocalDate?, today: LocalDate): Boolean {
     if (date == null) return false
-    val start = if (today.dayOfMonth <= 15) {
-        today.withDayOfMonth(1)
-    } else {
-        today.withDayOfMonth(16)
-    }
-
-    val end = if (today.dayOfMonth <= 15) {
-        today.withDayOfMonth(15)
-    } else {
-        today.withDayOfMonth(today.lengthOfMonth())
-    }
-
+    val start = if (today.dayOfMonth <= 15) today.withDayOfMonth(1) else today.withDayOfMonth(16)
+    val end = if (today.dayOfMonth <= 15) today.withDayOfMonth(15) else today.withDayOfMonth(today.lengthOfMonth())
     return !date.isBefore(start) && !date.isAfter(end)
 }
 
-private fun matchesThisMonth(date: LocalDate?, today: LocalDate): Boolean {
+private fun matchesThisMonthSafe(date: LocalDate?, today: LocalDate): Boolean {
     if (date == null) return false
     return date.year == today.year && date.month == today.month
 }
 
-private fun formatMoney(value: Double): String {
-    return "$" + String.format(Locale.US, "%.2f", value)
+private fun fortnightStartSafe(date: LocalDate): LocalDate {
+    return if (date.dayOfMonth <= 15) date.withDayOfMonth(1) else date.withDayOfMonth(16)
 }
 
+private fun fortnightEndSafe(date: LocalDate): LocalDate {
+    return if (date.dayOfMonth <= 15) date.withDayOfMonth(15) else date.withDayOfMonth(date.lengthOfMonth())
+}
 
+private fun formatPercentCompact(value: Double): String {
+    val safe = if (value.isFinite()) value else 0.0
+    return String.format(Locale.US, "%.1f%%", safe)
+}

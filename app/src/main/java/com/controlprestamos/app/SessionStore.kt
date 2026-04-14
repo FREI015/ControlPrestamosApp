@@ -1,6 +1,9 @@
 ﻿package com.controlprestamos.app
 
 import android.content.Context
+import android.util.Base64
+import java.security.MessageDigest
+import java.security.SecureRandom
 import org.json.JSONArray
 import org.json.JSONObject
 import java.time.Instant
@@ -103,6 +106,19 @@ data class LoanPaymentRecordData(
     val createdAt: Long = System.currentTimeMillis()
 )
 
+
+data class DeletedLoanSnapshotData(
+    val trashId: String = UUID.randomUUID().toString(),
+    val deletedAt: Long = System.currentTimeMillis(),
+    val loan: ManualLoanData = ManualLoanData(),
+    val payments: List<LoanPaymentRecordData> = emptyList()
+)
+
+data class RestoreDeletedLoanResult(
+    val success: Boolean = false,
+    val message: String = ""
+)
+
 private data class HistoryRecordData(
     val id: String = UUID.randomUUID().toString(),
     val createdAt: Long = System.currentTimeMillis(),
@@ -116,6 +132,8 @@ class SessionStore(context: Context) {
         private const val STATUS_ACTIVE = "ACTIVO"
         private const val STATUS_COLLECTED = "COBRADO"
         private const val STATUS_LOST = "PERDIDO"
+        private const val TRASH_RETENTION_DAYS = 30
+        private const val MAX_TRASH_ITEMS = 150
         private val historyDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         private val allowedHistoryPrefixes = listOf(
             "Perfil actualizado",
@@ -124,6 +142,9 @@ class SessionStore(context: Context) {
             "Préstamo cobrado",
             "Préstamo perdido",
             "Préstamo eliminado",
+            "Préstamo enviado a papelera",
+            "Préstamo restaurado",
+            "Papelera depurada",
             "Pago registrado",
             "Lista negra agregada",
             "Lista negra actualizada",
@@ -137,6 +158,8 @@ class SessionStore(context: Context) {
             "PIN inicial creado",
             "PIN actualizado",
             "PIN eliminado",
+            "Bloqueo automático",
+            "Bloqueo automático",
             "Bloqueo automático"
         )
     }
@@ -144,13 +167,54 @@ class SessionStore(context: Context) {
     fun isDarkMode(): Boolean = prefs.getBoolean("isDarkMode", false)
     fun setDarkMode(isDark: Boolean) = prefs.edit().putBoolean("isDarkMode", isDark).apply()
 
-    fun hasPin(): Boolean = prefs.getString("pin", "")?.isNotBlank() == true
-    fun savePin(pin: String) = prefs.edit().putString("pin", pin).apply()
-    fun validatePin(pin: String): Boolean = prefs.getString("pin", "") == pin
+    fun hasPin(): Boolean {
+        val hashedPin = prefs.getString("pin_hash", "") ?: ""
+        val legacyPin = prefs.getString("pin", "") ?: ""
+        return hashedPin.isNotBlank() || legacyPin.isNotBlank()
+    }
+
+    fun savePin(pin: String) {
+        val normalized = pin.filter(Char::isDigit)
+        require(normalized.length in 4..6) { "El PIN debe tener entre 4 y 6 dígitos." }
+
+        val salt = randomSalt()
+        val hash = hashPin(normalized, salt)
+
+        prefs.edit()
+            .remove("pin")
+            .putString("pin_salt", salt)
+            .putString("pin_hash", hash)
+            .putInt("pin_failed_attempts", 0)
+            .putLong("pin_lockout_until", 0L)
+            .apply()
+    }
+
+    fun validatePin(pin: String): Boolean {
+        val normalized = pin.filter(Char::isDigit)
+        if (normalized.isBlank()) return false
+
+        val storedHash = prefs.getString("pin_hash", "") ?: ""
+        val storedSalt = prefs.getString("pin_salt", "") ?: ""
+
+        if (storedHash.isNotBlank() && storedSalt.isNotBlank()) {
+            return hashPin(normalized, storedSalt) == storedHash
+        }
+
+        val legacyPin = prefs.getString("pin", "") ?: ""
+        val matchesLegacy = legacyPin.isNotBlank() && legacyPin == normalized
+        if (matchesLegacy) {
+            savePin(normalized)
+        }
+        return matchesLegacy
+    }
 
     fun clearPin() {
         prefs.edit()
             .remove("pin")
+            .remove("pin_salt")
+            .remove("pin_hash")
+            .putInt("pin_failed_attempts", 0)
+            .putLong("pin_lockout_until", 0L)
             .putBoolean("unlocked", false)
             .apply()
     }
@@ -158,9 +222,58 @@ class SessionStore(context: Context) {
     fun isUnlocked(): Boolean = prefs.getBoolean("unlocked", false)
     fun setUnlocked(value: Boolean) = prefs.edit().putBoolean("unlocked", value).apply()
 
+    fun isPinTemporarilyLocked(): Boolean {
+        val lockUntil = prefs.getLong("pin_lockout_until", 0L)
+        return lockUntil > System.currentTimeMillis()
+    }
+
+    fun getRemainingPinLockSeconds(): Long {
+        val remainingMillis = (prefs.getLong("pin_lockout_until", 0L) - System.currentTimeMillis()).coerceAtLeast(0L)
+        return if (remainingMillis == 0L) 0L else ((remainingMillis + 999L) / 1000L)
+    }
+
+    fun registerFailedPinAttempt(): Long {
+        if (isPinTemporarilyLocked()) return getRemainingPinLockSeconds()
+
+        val attempts = prefs.getInt("pin_failed_attempts", 0) + 1
+        return if (attempts >= 5) {
+            val lockUntil = System.currentTimeMillis() + 60_000L
+            prefs.edit()
+                .putInt("pin_failed_attempts", 0)
+                .putLong("pin_lockout_until", lockUntil)
+                .apply()
+            getRemainingPinLockSeconds()
+        } else {
+            prefs.edit()
+                .putInt("pin_failed_attempts", attempts)
+                .apply()
+            0L
+        }
+    }
+
+    fun clearPinFailures() {
+        prefs.edit()
+            .putInt("pin_failed_attempts", 0)
+            .putLong("pin_lockout_until", 0L)
+            .apply()
+    }
+
+    private fun randomSalt(): String {
+        val bytes = ByteArray(16)
+        SecureRandom().nextBytes(bytes)
+        return Base64.encodeToString(bytes, Base64.NO_WRAP)
+    }
+
+    private fun hashPin(pin: String, saltBase64: String): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        val salt = Base64.decode(saltBase64, Base64.NO_WRAP)
+        digest.update(salt)
+        return Base64.encodeToString(digest.digest(pin.toByteArray(Charsets.UTF_8)), Base64.NO_WRAP)
+    }
+
     fun saveProfile(data: UserProfileData) {
         prefs.edit()
-            .putString("photoUri", data.photoUri)
+            .remove("photoUri")
             .putString("name", data.name)
             .putString("lastName", data.lastName)
             .putString("idNumber", data.idNumber)
@@ -177,7 +290,7 @@ class SessionStore(context: Context) {
 
     fun readProfile(): UserProfileData {
         return UserProfileData(
-            photoUri = prefs.getString("photoUri", "") ?: "",
+            photoUri = "",
             name = prefs.getString("name", "") ?: "",
             lastName = prefs.getString("lastName", "") ?: "",
             idNumber = prefs.getString("idNumber", "") ?: "",
@@ -852,5 +965,391 @@ class SessionStore(context: Context) {
         saveFrequentUsersInternal(current)
         appendHistory("Usuario frecuente eliminado: ${removed.fullName}")
     }
-}
+    private fun deletedLoansKey(): String = "deleted_loans_json"
 
+    private fun saveDeletedLoanSnapshots(records: List<DeletedLoanSnapshotData>) {
+        val array = JSONArray()
+
+        records.forEach { record ->
+            val paymentsArray = JSONArray()
+            record.payments.forEach { payment ->
+                paymentsArray.put(
+                    JSONObject().apply {
+                        put("id", payment.id)
+                        put("loanId", payment.loanId)
+                        put("clientName", payment.clientName)
+                        put("amount", payment.amount)
+                        put("paymentDate", payment.paymentDate)
+                        put("paymentType", payment.paymentType)
+                        put("previousPaidAmount", payment.previousPaidAmount)
+                        put("newPaidAmount", payment.newPaidAmount)
+                        put("previousPendingAmount", payment.previousPendingAmount)
+                        put("newPendingAmount", payment.newPendingAmount)
+                        put("note", payment.note)
+                        put("createdAt", payment.createdAt)
+                    }
+                )
+            }
+
+            val loan = record.loan
+
+            array.put(
+                JSONObject().apply {
+                    put("trashId", record.trashId)
+                    put("deletedAt", record.deletedAt)
+                    put(
+                        "loan",
+                        JSONObject().apply {
+                            put("id", loan.id)
+                            put("fullName", loan.fullName)
+                            put("idNumber", loan.idNumber)
+                            put("phone", loan.phone)
+                            put("loanAmount", loan.loanAmount)
+                            put("percent", loan.percent)
+                            put("loanDate", loan.loanDate)
+                            put("dueDate", loan.dueDate)
+                            put("exchangeRate", loan.exchangeRate)
+                            put("conditions", loan.conditions)
+                            put("paidAmount", loan.paidAmount)
+                            put("status", loan.status)
+                            put("createdAt", loan.createdAt)
+                        }
+                    )
+                    put("payments", paymentsArray)
+                }
+            )
+        }
+
+        prefs.edit().putString(deletedLoansKey(), array.toString()).apply()
+    }
+
+    private fun readDeletedLoanSnapshots(): List<DeletedLoanSnapshotData> {
+        val array = safeArray(prefs.getString(deletedLoansKey(), "[]"))
+        val result = mutableListOf<DeletedLoanSnapshotData>()
+
+        for (i in 0 until array.length()) {
+            val obj = array.optJSONObject(i) ?: continue
+            val loanObj = obj.optJSONObject("loan") ?: JSONObject()
+            val paymentsArray = obj.optJSONArray("payments") ?: JSONArray()
+
+            val payments = mutableListOf<LoanPaymentRecordData>()
+            for (j in 0 until paymentsArray.length()) {
+                val paymentObj = paymentsArray.optJSONObject(j) ?: continue
+                payments.add(
+                    LoanPaymentRecordData(
+                        id = paymentObj.optString("id").ifBlank { UUID.randomUUID().toString() },
+                        loanId = paymentObj.optString("loanId"),
+                        clientName = paymentObj.optString("clientName"),
+                        amount = paymentObj.optDouble("amount", 0.0),
+                        paymentDate = paymentObj.optString("paymentDate", LocalDate.now().toString()),
+                        paymentType = paymentObj.optString("paymentType", "ABONO").ifBlank { "ABONO" },
+                        previousPaidAmount = paymentObj.optDouble("previousPaidAmount", 0.0),
+                        newPaidAmount = paymentObj.optDouble("newPaidAmount", 0.0),
+                        previousPendingAmount = paymentObj.optDouble("previousPendingAmount", 0.0),
+                        newPendingAmount = paymentObj.optDouble("newPendingAmount", 0.0),
+                        note = paymentObj.optString("note"),
+                        createdAt = paymentObj.optLong("createdAt", System.currentTimeMillis())
+                    )
+                )
+            }
+
+            val loan = normalizeLoanForPersistence(
+                ManualLoanData(
+                    id = loanObj.optString("id").ifBlank { UUID.randomUUID().toString() },
+                    fullName = loanObj.optString("fullName"),
+                    idNumber = loanObj.optString("idNumber"),
+                    phone = loanObj.optString("phone"),
+                    loanAmount = loanObj.optDouble("loanAmount", 0.0),
+                    percent = loanObj.optDouble("percent", 0.0),
+                    loanDate = loanObj.optString("loanDate"),
+                    dueDate = loanObj.optString("dueDate"),
+                    exchangeRate = loanObj.optString("exchangeRate"),
+                    conditions = loanObj.optString("conditions"),
+                    paidAmount = loanObj.optDouble("paidAmount", 0.0),
+                    status = loanObj.optString("status", STATUS_ACTIVE),
+                    createdAt = loanObj.optLong("createdAt", System.currentTimeMillis())
+                )
+            )
+
+            result.add(
+                DeletedLoanSnapshotData(
+                    trashId = obj.optString("trashId").ifBlank { UUID.randomUUID().toString() },
+                    deletedAt = obj.optLong("deletedAt", System.currentTimeMillis()),
+                    loan = loan,
+                    payments = payments.sortedByDescending { it.createdAt }.distinctBy { it.id }
+                )
+            )
+        }
+
+        return result
+            .sortedByDescending { it.deletedAt }
+            .distinctBy { it.trashId }
+    }
+
+    fun trashRetentionDays(): Int = TRASH_RETENTION_DAYS
+
+    private fun purgeExpiredDeletedLoans(): Int {
+        val current = readDeletedLoanSnapshots()
+        if (current.isEmpty()) return 0
+
+        val retentionMillis = TRASH_RETENTION_DAYS.toLong() * 24L * 60L * 60L * 1000L
+        val cutoff = System.currentTimeMillis() - retentionMillis
+
+        val kept = current.filter { it.deletedAt >= cutoff }
+        val removedCount = current.size - kept.size
+
+        if (removedCount > 0) {
+            saveDeletedLoanSnapshots(kept)
+            appendHistory("Papelera depurada: $removedCount registro(s) vencido(s)")
+        }
+
+        return removedCount
+    }
+
+    private fun hasPotentialRestoreDuplicate(candidate: ManualLoanData): Boolean {
+        return readLoans().any { existing ->
+            existing.id != candidate.id &&
+                existing.loanDate == candidate.loanDate &&
+                existing.dueDate == candidate.dueDate &&
+                existing.loanAmount == candidate.loanAmount &&
+                existing.percent == candidate.percent &&
+                (
+                    existing.fullName.equals(candidate.fullName, ignoreCase = true) ||
+                    (candidate.idNumber.isNotBlank() && existing.idNumber == candidate.idNumber) ||
+                    (candidate.phone.isNotBlank() && existing.phone == candidate.phone)
+                )
+        }
+    }
+
+    fun readDeletedLoans(): List<DeletedLoanSnapshotData> {
+        purgeExpiredDeletedLoans()
+        return readDeletedLoanSnapshots()
+    }
+
+    fun softDeleteLoan(id: String): Boolean {
+        purgeExpiredDeletedLoans()
+
+        val current = readLoans().toMutableList()
+        val removed = current.firstOrNull { it.id == id } ?: return false
+        val removedPayments = readLoanPaymentHistory(id)
+
+        val deleted = readDeletedLoanSnapshots()
+            .filterNot { it.loan.id == id }
+            .toMutableList()
+
+        deleted.add(
+            0,
+            DeletedLoanSnapshotData(
+                loan = removed,
+                payments = removedPayments
+            )
+        )
+
+        saveDeletedLoanSnapshots(deleted.take(MAX_TRASH_ITEMS))
+
+        current.removeAll { it.id == id }
+        saveLoans(current)
+        deleteLoanPaymentHistoryForLoan(id)
+
+        if (readActiveLoanId() == id) {
+            setActiveLoanId("")
+        }
+
+        appendHistory("Préstamo enviado a papelera: ${removed.fullName}")
+        return true
+    }
+
+    fun restoreDeletedLoanDetailed(trashId: String): RestoreDeletedLoanResult {
+        purgeExpiredDeletedLoans()
+
+        val deleted = readDeletedLoanSnapshots().toMutableList()
+        val index = deleted.indexOfFirst { it.trashId == trashId }
+        if (index < 0) {
+            return RestoreDeletedLoanResult(
+                success = false,
+                message = "El registro ya no existe en la papelera o venció su tiempo de retención."
+            )
+        }
+
+        val snapshot = deleted[index]
+
+        if (hasPotentialRestoreDuplicate(snapshot.loan)) {
+            return RestoreDeletedLoanResult(
+                success = false,
+                message = "Ya existe un préstamo muy parecido activo. Revisa la cartera antes de restaurar para evitar duplicados."
+            )
+        }
+
+        val currentLoans = readLoans()
+        val loanIdAlreadyExists = currentLoans.any { it.id == snapshot.loan.id }
+        val restoredLoanId = if (loanIdAlreadyExists) UUID.randomUUID().toString() else snapshot.loan.id
+        val restoredLoan = snapshot.loan.copy(id = restoredLoanId)
+
+        val existingPaymentIds = readAllLoanPaymentRecords().map { it.id }.toMutableSet()
+        val restoredPayments = snapshot.payments.map { payment ->
+            var paymentId = payment.id
+            while (existingPaymentIds.contains(paymentId)) {
+                paymentId = UUID.randomUUID().toString()
+            }
+            existingPaymentIds.add(paymentId)
+
+            payment.copy(
+                id = paymentId,
+                loanId = restoredLoanId
+            )
+        }
+
+        upsertLoanSilently(restoredLoan)
+
+        val mergedPayments = (restoredPayments + readAllLoanPaymentRecords())
+            .sortedByDescending { it.createdAt }
+            .distinctBy { it.id }
+
+        saveLoanPaymentRecords(mergedPayments)
+
+        deleted.removeAt(index)
+        saveDeletedLoanSnapshots(deleted)
+
+        if (loanIdAlreadyExists) {
+            appendHistory("Préstamo restaurado: ${restoredLoan.fullName} (nuevo identificador)")
+            return RestoreDeletedLoanResult(
+                success = true,
+                message = "Préstamo restaurado correctamente. Se asignó un nuevo identificador interno para evitar conflicto con uno existente."
+            )
+        }
+
+        appendHistory("Préstamo restaurado: ${restoredLoan.fullName}")
+        return RestoreDeletedLoanResult(
+            success = true,
+            message = "Préstamo restaurado correctamente."
+        )
+    }
+
+    fun restoreDeletedLoan(trashId: String): Boolean {
+        return restoreDeletedLoanDetailed(trashId).success
+    }
+
+    fun permanentlyDeleteTrashedLoan(trashId: String): Boolean {
+        purgeExpiredDeletedLoans()
+
+        val deleted = readDeletedLoanSnapshots().toMutableList()
+        val index = deleted.indexOfFirst { it.trashId == trashId }
+        if (index < 0) return false
+
+        val snapshot = deleted[index]
+        deleted.removeAt(index)
+        saveDeletedLoanSnapshots(deleted)
+
+        appendHistory("Préstamo eliminado definitivamente: ${snapshot.loan.fullName}")
+        return true
+    }
+
+    fun replaceImportedBackupData(
+        profile: UserProfileData?,
+        loans: List<ManualLoanData>,
+        payments: List<LoanPaymentRecordData>,
+        blacklist: List<BlacklistRecordData>,
+        referrals: List<ReferralRecordData>,
+        frequentUsers: List<FrequentUserPaymentData>
+    ): Int {
+        profile?.let { saveProfile(it) }
+
+        val normalizedLoans = loans
+            .map { normalizeLoanForPersistence(it) }
+            .sortedByDescending { it.createdAt }
+            .distinctBy { it.id }
+
+        saveLoans(normalizedLoans)
+
+        val validLoanIds = normalizedLoans.map { it.id }.toSet()
+
+        val cleanPayments = payments
+            .filter { it.loanId.isNotBlank() && it.loanId in validLoanIds }
+            .sortedByDescending { it.createdAt }
+            .distinctBy { it.id }
+
+        saveLoanPaymentRecords(cleanPayments)
+        saveBlacklist(blacklist.sortedByDescending { it.createdAt }.distinctBy { it.id })
+        saveReferralsInternal(referrals.sortedByDescending { it.createdAt }.distinctBy { it.id })
+        saveFrequentUsersInternal(frequentUsers.sortedByDescending { it.createdAt }.distinctBy { it.id })
+
+        val activeId = readActiveLoanId()
+        if (activeId.isNotBlank() && activeId !in validLoanIds) {
+            setActiveLoanId("")
+        }
+
+        appendHistory("Respaldo restaurado en modo reemplazo")
+
+        return normalizedLoans.size +
+            cleanPayments.size +
+            blacklist.distinctBy { it.id }.size +
+            referrals.distinctBy { it.id }.size +
+            frequentUsers.distinctBy { it.id }.size +
+            if (profile != null) 1 else 0
+    }
+
+    fun mergeImportedBackupData(
+        profile: UserProfileData?,
+        loans: List<ManualLoanData>,
+        payments: List<LoanPaymentRecordData>,
+        blacklist: List<BlacklistRecordData>,
+        referrals: List<ReferralRecordData>,
+        frequentUsers: List<FrequentUserPaymentData>
+    ): Int {
+        profile?.let {
+            saveProfile(mergeProfileData(readProfile(), it))
+        }
+
+        val mergedLoansBase = (loans + readLoans())
+            .sortedByDescending { it.createdAt }
+            .distinctBy { it.id }
+
+        val normalizedLoans = mergedLoansBase
+            .map { normalizeLoanForPersistence(it) }
+            .sortedByDescending { it.createdAt }
+            .distinctBy { it.id }
+
+        saveLoans(normalizedLoans)
+
+        val validLoanIds = normalizedLoans.map { it.id }.toSet()
+
+        val mergedPayments = (
+            payments.filter { it.loanId.isNotBlank() && it.loanId in validLoanIds } +
+                readAllLoanPaymentRecords()
+            )
+            .sortedByDescending { it.createdAt }
+            .distinctBy { it.id }
+
+        saveLoanPaymentRecords(mergedPayments)
+        saveBlacklist((blacklist + readBlacklist()).sortedByDescending { it.createdAt }.distinctBy { it.id })
+        saveReferralsInternal((referrals + readReferrals()).sortedByDescending { it.createdAt }.distinctBy { it.id })
+        saveFrequentUsersInternal((frequentUsers + readFrequentUsers()).sortedByDescending { it.createdAt }.distinctBy { it.id })
+
+        appendHistory("Respaldo restaurado en modo fusión")
+
+        return loans.distinctBy { it.id }.size +
+            payments.distinctBy { it.id }.size +
+            blacklist.distinctBy { it.id }.size +
+            referrals.distinctBy { it.id }.size +
+            frequentUsers.distinctBy { it.id }.size +
+            if (profile != null) 1 else 0
+    }
+
+    private fun mergeProfileData(
+        current: UserProfileData,
+        incoming: UserProfileData
+    ): UserProfileData {
+        return current.copy(
+            photoUri = incoming.photoUri.ifBlank { current.photoUri },
+            name = incoming.name.ifBlank { current.name },
+            lastName = incoming.lastName.ifBlank { current.lastName },
+            idNumber = incoming.idNumber.ifBlank { current.idNumber },
+            phone = incoming.phone.ifBlank { current.phone },
+            communicationPhone = incoming.communicationPhone.ifBlank { current.communicationPhone },
+            mobilePaymentPhone = incoming.mobilePaymentPhone.ifBlank { current.mobilePaymentPhone },
+            bankName = incoming.bankName.ifBlank { current.bankName },
+            bankAccount = incoming.bankAccount.ifBlank { current.bankAccount },
+            personalizedMessage = incoming.personalizedMessage.ifBlank { current.personalizedMessage }
+        )
+    }
+}

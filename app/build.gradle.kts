@@ -1,22 +1,55 @@
-﻿plugins {
+import java.io.FileInputStream
+import java.util.Properties
+
+plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        FileInputStream(keystorePropertiesFile).use { load(it) }
+    }
+}
+
 android {
     namespace = "com.controlprestamos"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.controlprestamos"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 35
+        versionCode = 3
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         vectorDrawables {
             useSupportLibrary = true
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                val storeFileValue = keystoreProperties.getProperty("storeFile")
+                val storePasswordValue = keystoreProperties.getProperty("storePassword")
+                val keyAliasValue = keystoreProperties.getProperty("keyAlias")
+                val keyPasswordValue = keystoreProperties.getProperty("keyPassword")
+
+                if (!storeFileValue.isNullOrBlank() &&
+                    !storePasswordValue.isNullOrBlank() &&
+                    !keyAliasValue.isNullOrBlank() &&
+                    !keyPasswordValue.isNullOrBlank()
+                ) {
+                    storeFile = file(storeFileValue)
+                    storePassword = storePasswordValue
+                    keyAlias = keyAliasValue
+                    keyPassword = keyPasswordValue
+                }
+            }
         }
     }
 
@@ -25,8 +58,22 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
         }
+
         release {
             isMinifyEnabled = false
+            isShrinkResources = false
+
+            val hasSigningProps =
+                keystorePropertiesFile.exists() &&
+                !keystoreProperties.getProperty("storeFile").isNullOrBlank() &&
+                !keystoreProperties.getProperty("storePassword").isNullOrBlank() &&
+                !keystoreProperties.getProperty("keyAlias").isNullOrBlank() &&
+                !keystoreProperties.getProperty("keyPassword").isNullOrBlank()
+
+            if (hasSigningProps) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -82,6 +129,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
