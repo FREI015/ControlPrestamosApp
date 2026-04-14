@@ -33,3 +33,6 @@ Thumbs.db
 keystore.properties
 release/
 app/release/
+# Local-only backups and generated files
+_respaldo_*/
+_historial_*/

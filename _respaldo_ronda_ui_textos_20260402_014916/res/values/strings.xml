@@ -1,9 +1,0 @@
-﻿<resources>
-    <string name="app_name">Control de Préstamos</string>
-    <string name="home_title">Panel de cartera</string>
-    <string name="home_subtitle">Resumen quincenal, mensual, trimestral y semestral</string>
-
-    <string name="privacy_policy_public_url">PENDIENTE_PUBLICAR_URL_FINAL</string>
-    <string name="privacy_policy_support_email">PENDIENTE_CORREO_SOPORTE</string>
-    <string name="privacy_policy_last_updated">2026-04-01</string>
-</resources>
