@@ -254,42 +254,19 @@ class SessionStore(context: Context) {
         blacklist: List<BlacklistRecordData>,
         referrals: List<ReferralRecordData>,
         frequentUsers: List<FrequentUserPaymentData>
-    ): Int {
-        profile?.let { saveProfile(it) }
-
-        val normalizedLoans = loans
-            .map { normalizeLoanForPersistence(it) }
-            .sortedByDescending { it.createdAt }
-            .distinctBy { it.id }
-
-        saveLoans(normalizedLoans)
-
-        val validLoanIds = normalizedLoans.map { it.id }.toSet()
-
-        val cleanPayments = payments
-            .filter { it.loanId.isNotBlank() && it.loanId in validLoanIds }
-            .sortedByDescending { it.createdAt }
-            .distinctBy { it.id }
-
-        saveLoanPaymentRecords(cleanPayments)
-        saveBlacklist(blacklist.sortedByDescending { it.createdAt }.distinctBy { it.id })
-        saveReferralsInternal(referrals.sortedByDescending { it.createdAt }.distinctBy { it.id })
-        saveFrequentUsersInternal(frequentUsers.sortedByDescending { it.createdAt }.distinctBy { it.id })
-
-        val activeId = readActiveLoanId()
-        if (activeId.isNotBlank() && activeId !in validLoanIds) {
-            setActiveLoanId("")
-        }
-
-        appendHistory("Respaldo restaurado en modo reemplazo")
-
-        return normalizedLoans.size +
-            cleanPayments.size +
-            blacklist.distinctBy { it.id }.size +
-            referrals.distinctBy { it.id }.size +
-            frequentUsers.distinctBy { it.id }.size +
-            if (profile != null) 1 else 0
-    }
+    ): Int = backupTrashStore.replaceImportedBackupData(
+        profile = profile,
+        loans = loans,
+        payments = payments,
+        blacklist = blacklist,
+        referrals = referrals,
+        frequentUsers = frequentUsers,
+        saveProfileFn = { saveProfile(it) },
+        normalizeLoanForPersistenceWithExistingFn = { loan, existing -> normalizeLoanForPersistence(loan, existing) },
+        saveBlacklistFn = { saveBlacklist(it) },
+        saveReferralsInternalFn = { saveReferralsInternal(it) },
+        saveFrequentUsersInternalFn = { saveFrequentUsersInternal(it) }
+    )
 
     fun mergeImportedBackupData(
         profile: UserProfileData?,
@@ -298,46 +275,24 @@ class SessionStore(context: Context) {
         blacklist: List<BlacklistRecordData>,
         referrals: List<ReferralRecordData>,
         frequentUsers: List<FrequentUserPaymentData>
-    ): Int {
-        profile?.let {
-            saveProfile(mergeProfileData(readProfile(), it))
-        }
-
-        val mergedLoansBase = (loans + readLoans())
-            .sortedByDescending { it.createdAt }
-            .distinctBy { it.id }
-
-        val normalizedLoans = mergedLoansBase
-            .map { normalizeLoanForPersistence(it) }
-            .sortedByDescending { it.createdAt }
-            .distinctBy { it.id }
-
-        saveLoans(normalizedLoans)
-
-        val validLoanIds = normalizedLoans.map { it.id }.toSet()
-
-        val mergedPayments = (
-            payments.filter { it.loanId.isNotBlank() && it.loanId in validLoanIds } +
-                readAllLoanPaymentRecords()
-            )
-            .sortedByDescending { it.createdAt }
-            .distinctBy { it.id }
-
-        saveLoanPaymentRecords(mergedPayments)
-        saveBlacklist((blacklist + readBlacklist()).sortedByDescending { it.createdAt }.distinctBy { it.id })
-        saveReferralsInternal((referrals + readReferrals()).sortedByDescending { it.createdAt }.distinctBy { it.id })
-        saveFrequentUsersInternal((frequentUsers + readFrequentUsers()).sortedByDescending { it.createdAt }.distinctBy { it.id })
-
-        appendHistory("Respaldo restaurado en modo fusiÃ³n")
-
-        return loans.distinctBy { it.id }.size +
-            payments.distinctBy { it.id }.size +
-            blacklist.distinctBy { it.id }.size +
-            referrals.distinctBy { it.id }.size +
-            frequentUsers.distinctBy { it.id }.size +
-            if (profile != null) 1 else 0
-    }
-
+    ): Int = backupTrashStore.mergeImportedBackupData(
+        profile = profile,
+        loans = loans,
+        payments = payments,
+        blacklist = blacklist,
+        referrals = referrals,
+        frequentUsers = frequentUsers,
+        saveProfileFn = { saveProfile(it) },
+        readProfileFn = { readProfile() },
+        mergeProfileDataFn = { current, incoming -> mergeProfileData(current, incoming) },
+        normalizeLoanForPersistenceWithExistingFn = { loan, existing -> normalizeLoanForPersistence(loan, existing) },
+        saveBlacklistFn = { saveBlacklist(it) },
+        readBlacklistFn = { readBlacklist() },
+        saveReferralsInternalFn = { saveReferralsInternal(it) },
+        readReferralsFn = { readReferrals() },
+        saveFrequentUsersInternalFn = { saveFrequentUsersInternal(it) },
+        readFrequentUsersFn = { readFrequentUsers() }
+    )
     private fun mergeProfileData(
         current: UserProfileData,
         incoming: UserProfileData

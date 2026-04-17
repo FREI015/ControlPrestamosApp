@@ -312,4 +312,109 @@ class SessionBackupTrashStore(
         onHistory("Préstamo eliminado definitivamente: ${snapshot.loan.fullName}")
         return true
     }
+    fun replaceImportedBackupData(
+        profile: UserProfileData?,
+        loans: List<ManualLoanData>,
+        payments: List<LoanPaymentRecordData>,
+        blacklist: List<BlacklistRecordData>,
+        referrals: List<ReferralRecordData>,
+        frequentUsers: List<FrequentUserPaymentData>,
+        saveProfileFn: (UserProfileData) -> Unit,
+        normalizeLoanForPersistenceWithExistingFn: (ManualLoanData, ManualLoanData?) -> ManualLoanData,
+        saveBlacklistFn: (List<BlacklistRecordData>) -> Unit,
+        saveReferralsInternalFn: (List<ReferralRecordData>) -> Unit,
+        saveFrequentUsersInternalFn: (List<FrequentUserPaymentData>) -> Unit
+    ): Int {
+        profile?.let { saveProfileFn(it) }
+
+        val normalizedLoans = loans
+            .map { normalizeLoanForPersistenceWithExistingFn(it, null) }
+            .sortedByDescending { it.createdAt }
+            .distinctBy { it.id }
+
+        saveLoansFn(normalizedLoans)
+
+        val validLoanIds = normalizedLoans.map { it.id }.toSet()
+
+        val cleanPayments = payments
+            .filter { it.loanId.isNotBlank() && it.loanId in validLoanIds }
+            .sortedByDescending { it.createdAt }
+            .distinctBy { it.id }
+
+        saveLoanPaymentRecordsFn(cleanPayments)
+        saveBlacklistFn(blacklist.sortedByDescending { it.createdAt }.distinctBy { it.id })
+        saveReferralsInternalFn(referrals.sortedByDescending { it.createdAt }.distinctBy { it.id })
+        saveFrequentUsersInternalFn(frequentUsers.sortedByDescending { it.createdAt }.distinctBy { it.id })
+
+        val activeId = readActiveLoanIdFn()
+        if (activeId.isNotBlank() && activeId !in validLoanIds) {
+            setActiveLoanIdFn("")
+        }
+
+        onHistory("Respaldo restaurado en modo reemplazo")
+
+        return normalizedLoans.size +
+            cleanPayments.size +
+            blacklist.distinctBy { it.id }.size +
+            referrals.distinctBy { it.id }.size +
+            frequentUsers.distinctBy { it.id }.size +
+            if (profile != null) 1 else 0
+    }
+
+    fun mergeImportedBackupData(
+        profile: UserProfileData?,
+        loans: List<ManualLoanData>,
+        payments: List<LoanPaymentRecordData>,
+        blacklist: List<BlacklistRecordData>,
+        referrals: List<ReferralRecordData>,
+        frequentUsers: List<FrequentUserPaymentData>,
+        saveProfileFn: (UserProfileData) -> Unit,
+        readProfileFn: () -> UserProfileData,
+        mergeProfileDataFn: (UserProfileData, UserProfileData) -> UserProfileData,
+        normalizeLoanForPersistenceWithExistingFn: (ManualLoanData, ManualLoanData?) -> ManualLoanData,
+        saveBlacklistFn: (List<BlacklistRecordData>) -> Unit,
+        readBlacklistFn: () -> List<BlacklistRecordData>,
+        saveReferralsInternalFn: (List<ReferralRecordData>) -> Unit,
+        readReferralsFn: () -> List<ReferralRecordData>,
+        saveFrequentUsersInternalFn: (List<FrequentUserPaymentData>) -> Unit,
+        readFrequentUsersFn: () -> List<FrequentUserPaymentData>
+    ): Int {
+        profile?.let {
+            saveProfileFn(mergeProfileDataFn(readProfileFn(), it))
+        }
+
+        val mergedLoansBase = (loans + readLoansFn())
+            .sortedByDescending { it.createdAt }
+            .distinctBy { it.id }
+
+        val normalizedLoans = mergedLoansBase
+            .map { normalizeLoanForPersistenceWithExistingFn(it, null) }
+            .sortedByDescending { it.createdAt }
+            .distinctBy { it.id }
+
+        saveLoansFn(normalizedLoans)
+
+        val validLoanIds = normalizedLoans.map { it.id }.toSet()
+
+        val mergedPayments = (
+            payments.filter { it.loanId.isNotBlank() && it.loanId in validLoanIds } +
+                readAllLoanPaymentRecordsFn()
+            )
+            .sortedByDescending { it.createdAt }
+            .distinctBy { it.id }
+
+        saveLoanPaymentRecordsFn(mergedPayments)
+        saveBlacklistFn((blacklist + readBlacklistFn()).sortedByDescending { it.createdAt }.distinctBy { it.id })
+        saveReferralsInternalFn((referrals + readReferralsFn()).sortedByDescending { it.createdAt }.distinctBy { it.id })
+        saveFrequentUsersInternalFn((frequentUsers + readFrequentUsersFn()).sortedByDescending { it.createdAt }.distinctBy { it.id })
+
+        onHistory("Respaldo restaurado en modo fusión")
+
+        return loans.distinctBy { it.id }.size +
+            payments.distinctBy { it.id }.size +
+            blacklist.distinctBy { it.id }.size +
+            referrals.distinctBy { it.id }.size +
+            frequentUsers.distinctBy { it.id }.size +
+            if (profile != null) 1 else 0
+    }
 }
