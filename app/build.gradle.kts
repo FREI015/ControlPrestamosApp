@@ -55,8 +55,7 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
+            // Sin sufijos: una sola app instalada
         }
 
         release {
