@@ -1,15 +1,9 @@
-﻿package com.controlprestamos.app
+package com.controlprestamos.app
 
 import android.content.Context
-import android.util.Base64
-import java.security.MessageDigest
-import java.security.SecureRandom
 import org.json.JSONArray
 import org.json.JSONObject
-import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 data class UserProfileData(
@@ -119,14 +113,11 @@ data class RestoreDeletedLoanResult(
     val message: String = ""
 )
 
-private data class HistoryRecordData(
-    val id: String = UUID.randomUUID().toString(),
-    val createdAt: Long = System.currentTimeMillis(),
-    val message: String = ""
-)
-
 class SessionStore(context: Context) {
     private val prefs = context.getSharedPreferences("ControlPrestamosPrefs", Context.MODE_PRIVATE)
+
+    private val securityStore = SessionSecurityStore(prefs)
+    private val profileHistoryStore = SessionProfileHistoryStore(prefs)
 
     companion object {
         private const val STATUS_ACTIVE = "ACTIVO"
@@ -134,199 +125,26 @@ class SessionStore(context: Context) {
         private const val STATUS_LOST = "PERDIDO"
         private const val TRASH_RETENTION_DAYS = 30
         private const val MAX_TRASH_ITEMS = 150
-        private val historyDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-        private val allowedHistoryPrefixes = listOf(
-            "Perfil actualizado",
-            "Préstamo registrado",
-            "Préstamo actualizado",
-            "Préstamo cobrado",
-            "Préstamo perdido",
-            "Préstamo eliminado",
-            "Préstamo enviado a papelera",
-            "Préstamo restaurado",
-            "Papelera depurada",
-            "Pago registrado",
-            "Lista negra agregada",
-            "Lista negra actualizada",
-            "Lista negra eliminada",
-            "Referido guardado",
-            "Referido actualizado",
-            "Referido eliminado",
-            "Usuario frecuente guardado",
-            "Usuario frecuente actualizado",
-            "Usuario frecuente eliminado",
-            "PIN inicial creado",
-            "PIN actualizado",
-            "PIN eliminado",
-            "Bloqueo automático",
-            "Bloqueo automático",
-            "Bloqueo automático"
-        )
     }
+    fun isDarkMode(): Boolean = securityStore.isDarkMode()
+    fun setDarkMode(isDark: Boolean) = securityStore.setDarkMode(isDark)
 
-    fun isDarkMode(): Boolean = prefs.getBoolean("isDarkMode", false)
-    fun setDarkMode(isDark: Boolean) = prefs.edit().putBoolean("isDarkMode", isDark).apply()
+    fun hasPin(): Boolean = securityStore.hasPin()
+    fun savePin(pin: String) = securityStore.savePin(pin)
+    fun validatePin(pin: String): Boolean = securityStore.validatePin(pin)
+    fun clearPin() = securityStore.clearPin()
 
-    fun hasPin(): Boolean {
-        val hashedPin = prefs.getString("pin_hash", "") ?: ""
-        val legacyPin = prefs.getString("pin", "") ?: ""
-        return hashedPin.isNotBlank() || legacyPin.isNotBlank()
-    }
-
-    fun savePin(pin: String) {
-        val normalized = pin.filter(Char::isDigit)
-        require(normalized.length in 4..6) { "El PIN debe tener entre 4 y 6 dígitos." }
-
-        val salt = randomSalt()
-        val hash = hashPin(normalized, salt)
-
-        prefs.edit()
-            .remove("pin")
-            .putString("pin_salt", salt)
-            .putString("pin_hash", hash)
-            .putInt("pin_failed_attempts", 0)
-            .putLong("pin_lockout_until", 0L)
-            .apply()
-    }
-
-    fun validatePin(pin: String): Boolean {
-        val normalized = pin.filter(Char::isDigit)
-        if (normalized.isBlank()) return false
-
-        val storedHash = prefs.getString("pin_hash", "") ?: ""
-        val storedSalt = prefs.getString("pin_salt", "") ?: ""
-
-        if (storedHash.isNotBlank() && storedSalt.isNotBlank()) {
-            return hashPin(normalized, storedSalt) == storedHash
-        }
-
-        val legacyPin = prefs.getString("pin", "") ?: ""
-        val matchesLegacy = legacyPin.isNotBlank() && legacyPin == normalized
-        if (matchesLegacy) {
-            savePin(normalized)
-        }
-        return matchesLegacy
-    }
-
-    fun clearPin() {
-        prefs.edit()
-            .remove("pin")
-            .remove("pin_salt")
-            .remove("pin_hash")
-            .putInt("pin_failed_attempts", 0)
-            .putLong("pin_lockout_until", 0L)
-            .putBoolean("unlocked", false)
-            .apply()
-    }
-
-    fun isUnlocked(): Boolean = prefs.getBoolean("unlocked", false)
-    fun setUnlocked(value: Boolean) = prefs.edit().putBoolean("unlocked", value).apply()
-
-    fun isPinTemporarilyLocked(): Boolean {
-        val lockUntil = prefs.getLong("pin_lockout_until", 0L)
-        return lockUntil > System.currentTimeMillis()
-    }
-
-    fun getRemainingPinLockSeconds(): Long {
-        val remainingMillis = (prefs.getLong("pin_lockout_until", 0L) - System.currentTimeMillis()).coerceAtLeast(0L)
-        return if (remainingMillis == 0L) 0L else ((remainingMillis + 999L) / 1000L)
-    }
-
-    fun registerFailedPinAttempt(): Long {
-        if (isPinTemporarilyLocked()) return getRemainingPinLockSeconds()
-
-        val attempts = prefs.getInt("pin_failed_attempts", 0) + 1
-        return if (attempts >= 5) {
-            val lockUntil = System.currentTimeMillis() + 60_000L
-            prefs.edit()
-                .putInt("pin_failed_attempts", 0)
-                .putLong("pin_lockout_until", lockUntil)
-                .apply()
-            getRemainingPinLockSeconds()
-        } else {
-            prefs.edit()
-                .putInt("pin_failed_attempts", attempts)
-                .apply()
-            0L
-        }
-    }
-
-    fun clearPinFailures() {
-        prefs.edit()
-            .putInt("pin_failed_attempts", 0)
-            .putLong("pin_lockout_until", 0L)
-            .apply()
-    }
-
-    private fun randomSalt(): String {
-        val bytes = ByteArray(16)
-        SecureRandom().nextBytes(bytes)
-        return Base64.encodeToString(bytes, Base64.NO_WRAP)
-    }
-
-    private fun hashPin(pin: String, saltBase64: String): String {
-        val digest = MessageDigest.getInstance("SHA-256")
-        val salt = Base64.decode(saltBase64, Base64.NO_WRAP)
-        digest.update(salt)
-        return Base64.encodeToString(digest.digest(pin.toByteArray(Charsets.UTF_8)), Base64.NO_WRAP)
-    }
-
-    fun saveProfile(data: UserProfileData) {
-        prefs.edit()
-            .remove("photoUri")
-            .putString("name", data.name)
-            .putString("lastName", data.lastName)
-            .putString("idNumber", data.idNumber)
-            .putString("phone", data.phone)
-            .putString("communicationPhone", data.communicationPhone)
-            .putString("mobilePaymentPhone", data.mobilePaymentPhone)
-            .putString("bankName", data.bankName)
-            .putString("bankAccount", data.bankAccount)
-            .putString("personalizedMessage", data.personalizedMessage)
-            .apply()
-
-        appendHistory("Perfil actualizado")
-    }
-
-    fun readProfile(): UserProfileData {
-        return UserProfileData(
-            photoUri = "",
-            name = prefs.getString("name", "") ?: "",
-            lastName = prefs.getString("lastName", "") ?: "",
-            idNumber = prefs.getString("idNumber", "") ?: "",
-            phone = prefs.getString("phone", "") ?: "",
-            communicationPhone = prefs.getString("communicationPhone", "") ?: "",
-            mobilePaymentPhone = prefs.getString("mobilePaymentPhone", "") ?: "",
-            bankName = prefs.getString("bankName", "") ?: "",
-            bankAccount = prefs.getString("bankAccount", "") ?: "",
-            personalizedMessage = prefs.getString("personalizedMessage", UserProfileData().personalizedMessage)
-                ?: UserProfileData().personalizedMessage
-        )
-    }
-
-    fun logout() {
-        prefs.edit().putBoolean("unlocked", false).apply()
-    }
-
-    fun appendHistory(item: String) {
-        val clean = item.trim()
-        if (clean.isBlank()) return
-
-        val current = readHistoryRecords().toMutableList()
-        current.add(0, HistoryRecordData(message = clean))
-        saveHistoryRecords(current.take(300))
-    }
-
-    fun readOperationalHistory(): List<String> {
-        migrateLegacyHistoryIfNeeded()
-
-        return readHistoryRecords()
-            .sortedByDescending { it.createdAt }
-            .filter { record -> allowedHistoryPrefixes.any { prefix -> record.message.startsWith(prefix) } }
-            .map { record -> "${formatHistoryTimestamp(record.createdAt)} · ${record.message}" }
-    }
-
-    private fun historyKey(): String = "history_records_json"
+    fun isUnlocked(): Boolean = securityStore.isUnlocked()
+    fun setUnlocked(value: Boolean) = securityStore.setUnlocked(value)
+    fun isPinTemporarilyLocked(): Boolean = securityStore.isPinTemporarilyLocked()
+    fun getRemainingPinLockSeconds(): Long = securityStore.getRemainingPinLockSeconds()
+    fun registerFailedPinAttempt(): Long = securityStore.registerFailedPinAttempt()
+    fun clearPinFailures() = securityStore.clearPinFailures()
+    fun saveProfile(data: UserProfileData) = profileHistoryStore.saveProfile(data)
+    fun readProfile(): UserProfileData = profileHistoryStore.readProfile()
+    fun logout() = profileHistoryStore.logout()
+    fun appendHistory(item: String) = profileHistoryStore.appendHistory(item)
+    fun readOperationalHistory(): List<String> = profileHistoryStore.readOperationalHistory()
     private fun loansKey(): String = "manual_loans_json"
     private fun loanPaymentsKey(): String = "loan_payment_records_json"
     private fun blacklistKey(): String = "blacklist_records_json"
@@ -340,67 +158,6 @@ class SessionStore(context: Context) {
             JSONArray()
         }
     }
-
-    private fun formatHistoryTimestamp(value: Long): String {
-        return try {
-            Instant.ofEpochMilli(value)
-                .atZone(ZoneId.systemDefault())
-                .format(historyDateFormatter)
-        } catch (_: Exception) {
-            "Sin fecha"
-        }
-    }
-
-    private fun saveHistoryRecords(records: List<HistoryRecordData>) {
-        val array = JSONArray()
-        records.forEach { record ->
-            array.put(
-                JSONObject().apply {
-                    put("id", record.id)
-                    put("createdAt", record.createdAt)
-                    put("message", record.message)
-                }
-            )
-        }
-        prefs.edit().putString(historyKey(), array.toString()).apply()
-    }
-
-    private fun readHistoryRecords(): List<HistoryRecordData> {
-        val array = safeArray(prefs.getString(historyKey(), "[]"))
-        val result = mutableListOf<HistoryRecordData>()
-
-        for (i in 0 until array.length()) {
-            val obj = array.optJSONObject(i) ?: continue
-            val message = obj.optString("message").trim()
-            if (message.isBlank()) continue
-
-            result.add(
-                HistoryRecordData(
-                    id = obj.optString("id").ifBlank { UUID.randomUUID().toString() },
-                    createdAt = obj.optLong("createdAt", System.currentTimeMillis()),
-                    message = message
-                )
-            )
-        }
-
-        return result
-            .sortedByDescending { it.createdAt }
-            .distinctBy { it.id }
-    }
-
-    private fun migrateLegacyHistoryIfNeeded() {
-        val legacy = prefs.getStringSet("history_items", emptySet()) ?: emptySet()
-        if (legacy.isEmpty()) return
-
-        val migrated = readHistoryRecords().toMutableList()
-        legacy.forEach { entry ->
-            val timestamp = entry.substringBefore("|", "0").toLongOrNull() ?: System.currentTimeMillis()
-            val message = entry.substringAfter("|", "").trim()
-            if (message.isNotBlank()) {
-                migrated.add(HistoryRecordData(createdAt = timestamp, message = message))
-            }
-        }
-
         saveHistoryRecords(
             migrated
                 .sortedByDescending { it.createdAt }
