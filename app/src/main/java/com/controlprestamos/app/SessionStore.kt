@@ -16,7 +16,7 @@ data class UserProfileData(
     val mobilePaymentPhone: String = "",
     val bankName: String = "",
     val bankAccount: String = "",
-    val personalizedMessage: String = "Hola, buenos días. Le escribo por el vencimiento de su préstamo. A continuación le comparto los datos de pago. Muchas gracias."
+    val personalizedMessage: String = "Hola, buenos dÃƒÂ­as. Le escribo por el vencimiento de su prÃƒÂ©stamo. A continuaciÃƒÂ³n le comparto los datos de pago. Muchas gracias."
 )
 
 data class ManualLoanData(
@@ -159,14 +159,7 @@ class SessionStore(context: Context) {
             JSONArray()
         }
     }
-        saveHistoryRecords(
-            migrated
-                .sortedByDescending { it.createdAt }
-                .take(300)
-        )
 
-        prefs.edit().remove("history_items").apply()
-    }
 
     private fun normalizeStatus(pendingAmount: Double, explicitLost: Boolean): String {
         if (explicitLost && pendingAmount > 0.0) return STATUS_LOST
@@ -280,10 +273,10 @@ class SessionStore(context: Context) {
 
         if (index >= 0) {
             current[index] = normalized
-            appendHistory("Préstamo actualizado: ${normalized.fullName}")
+            appendHistory("PrÃƒÂ©stamo actualizado: ${normalized.fullName}")
         } else {
             current.add(0, normalized)
-            appendHistory("Préstamo registrado: ${normalized.fullName}")
+            appendHistory("PrÃƒÂ©stamo registrado: ${normalized.fullName}")
         }
 
         saveLoans(current)
@@ -305,7 +298,7 @@ class SessionStore(context: Context) {
             setActiveLoanId("")
         }
 
-        appendHistory("Préstamo eliminado: ${removed.fullName}")
+        appendHistory("PrÃƒÂ©stamo eliminado: ${removed.fullName}")
     }
 
     fun setActiveLoanId(id: String) {
@@ -453,7 +446,7 @@ class SessionStore(context: Context) {
                 previousPendingAmount = previousPending,
                 newPendingAmount = newPending,
                 note = if (paymentAmount > appliedAmount) {
-                    "Se aplicó solo el pendiente restante."
+                    "Se aplicÃƒÂ³ solo el pendiente restante."
                 } else {
                     ""
                 }
@@ -461,7 +454,7 @@ class SessionStore(context: Context) {
         )
 
         appendHistory(
-            "Pago registrado: ${loan.fullName} abonó ${"%.2f".format(java.util.Locale.US, appliedAmount)} USD. Pendiente: ${"%.2f".format(java.util.Locale.US, newPending)} USD"
+            "Pago registrado: ${loan.fullName} abonÃƒÂ³ ${"%.2f".format(java.util.Locale.US, appliedAmount)} USD. Pendiente: ${"%.2f".format(java.util.Locale.US, newPending)} USD"
         )
 
         return true
@@ -477,7 +470,7 @@ class SessionStore(context: Context) {
                 status = STATUS_COLLECTED
             )
         )
-        appendHistory("Préstamo cobrado: ${loan.fullName}")
+        appendHistory("PrÃƒÂ©stamo cobrado: ${loan.fullName}")
         return true
     }
 
@@ -486,7 +479,7 @@ class SessionStore(context: Context) {
         if (loan.status == STATUS_LOST) return false
 
         upsertLoanSilently(loan.copy(status = STATUS_LOST))
-        appendHistory("Préstamo perdido: ${loan.fullName}")
+        appendHistory("PrÃƒÂ©stamo perdido: ${loan.fullName}")
         return true
     }
 
@@ -694,7 +687,7 @@ class SessionStore(context: Context) {
             setActiveLoanId("")
         }
 
-        appendHistory("Préstamo enviado a papelera: ${removed.fullName}")
+        appendHistory("PrÃƒÂ©stamo enviado a papelera: ${removed.fullName}")
         return true
     }
 
@@ -706,7 +699,7 @@ class SessionStore(context: Context) {
         if (index < 0) {
             return RestoreDeletedLoanResult(
                 success = false,
-                message = "El registro ya no existe en la papelera o venció su tiempo de retención."
+                message = "El registro ya no existe en la papelera o venciÃƒÂ³ su tiempo de retenciÃƒÂ³n."
             )
         }
 
@@ -715,7 +708,7 @@ class SessionStore(context: Context) {
         if (hasPotentialRestoreDuplicate(snapshot.loan)) {
             return RestoreDeletedLoanResult(
                 success = false,
-                message = "Ya existe un préstamo muy parecido activo. Revisa la cartera antes de restaurar para evitar duplicados."
+                message = "Ya existe un prÃƒÂ©stamo muy parecido activo. Revisa la cartera antes de restaurar para evitar duplicados."
             )
         }
 
@@ -750,17 +743,17 @@ class SessionStore(context: Context) {
         saveDeletedLoanSnapshots(deleted)
 
         if (loanIdAlreadyExists) {
-            appendHistory("Préstamo restaurado: ${restoredLoan.fullName} (nuevo identificador)")
+            appendHistory("PrÃƒÂ©stamo restaurado: ${restoredLoan.fullName} (nuevo identificador)")
             return RestoreDeletedLoanResult(
                 success = true,
-                message = "Préstamo restaurado correctamente. Se asignó un nuevo identificador interno para evitar conflicto con uno existente."
+                message = "PrÃƒÂ©stamo restaurado correctamente. Se asignÃƒÂ³ un nuevo identificador interno para evitar conflicto con uno existente."
             )
         }
 
-        appendHistory("Préstamo restaurado: ${restoredLoan.fullName}")
+        appendHistory("PrÃƒÂ©stamo restaurado: ${restoredLoan.fullName}")
         return RestoreDeletedLoanResult(
             success = true,
-            message = "Préstamo restaurado correctamente."
+            message = "PrÃƒÂ©stamo restaurado correctamente."
         )
     }
 
@@ -779,7 +772,7 @@ class SessionStore(context: Context) {
         deleted.removeAt(index)
         saveDeletedLoanSnapshots(deleted)
 
-        appendHistory("Préstamo eliminado definitivamente: ${snapshot.loan.fullName}")
+        appendHistory("PrÃƒÂ©stamo eliminado definitivamente: ${snapshot.loan.fullName}")
         return true
     }
 
@@ -864,7 +857,7 @@ class SessionStore(context: Context) {
         saveReferralsInternal((referrals + readReferrals()).sortedByDescending { it.createdAt }.distinctBy { it.id })
         saveFrequentUsersInternal((frequentUsers + readFrequentUsers()).sortedByDescending { it.createdAt }.distinctBy { it.id })
 
-        appendHistory("Respaldo restaurado en modo fusión")
+        appendHistory("Respaldo restaurado en modo fusiÃƒÂ³n")
 
         return loans.distinctBy { it.id }.size +
             payments.distinctBy { it.id }.size +

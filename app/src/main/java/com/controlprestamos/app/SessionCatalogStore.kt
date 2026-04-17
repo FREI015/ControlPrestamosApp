@@ -3,6 +3,7 @@ package com.controlprestamos.app
 import android.content.SharedPreferences
 import org.json.JSONArray
 import org.json.JSONObject
+import java.time.LocalDate
 import java.util.UUID
 
 class SessionCatalogStore(
