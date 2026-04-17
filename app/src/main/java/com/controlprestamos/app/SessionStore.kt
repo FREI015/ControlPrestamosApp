@@ -118,6 +118,7 @@ class SessionStore(context: Context) {
 
     private val securityStore = SessionSecurityStore(prefs)
     private val profileHistoryStore = SessionProfileHistoryStore(prefs)
+    private val catalogStore = SessionCatalogStore(prefs) { appendHistory(it) }
 
     companion object {
         private const val STATUS_ACTIVE = "ACTIVO"
@@ -489,239 +490,20 @@ class SessionStore(context: Context) {
         return true
     }
 
-    private fun saveBlacklist(records: List<BlacklistRecordData>) {
-        val array = JSONArray()
-        records.forEach { item ->
-            array.put(
-                JSONObject().apply {
-                    put("id", item.id)
-                    put("fullName", item.fullName)
-                    put("idNumber", item.idNumber)
-                    put("phone", item.phone)
-                    put("reason", item.reason)
-                    put("notes", item.notes)
-                    put("addedDate", item.addedDate)
-                    put("createdAt", item.createdAt)
-                }
-            )
-        }
-        prefs.edit().putString(blacklistKey(), array.toString()).apply()
-    }
+    private fun saveBlacklist(records: List<BlacklistRecordData>) = catalogStore.saveBlacklist(records)
+    fun readBlacklist(): List<BlacklistRecordData> = catalogStore.readBlacklist()
+    fun saveBlacklistRecord(item: BlacklistRecordData) = catalogStore.saveBlacklistRecord(item)
+    fun deleteBlacklistRecord(id: String) = catalogStore.deleteBlacklistRecord(id)
 
-    fun readBlacklist(): List<BlacklistRecordData> {
-        val array = safeArray(prefs.getString(blacklistKey(), "[]"))
-        val result = mutableListOf<BlacklistRecordData>()
+    private fun saveReferralsInternal(records: List<ReferralRecordData>) = catalogStore.saveReferralsInternal(records)
+    fun readReferrals(): List<ReferralRecordData> = catalogStore.readReferrals()
+    fun saveReferral(item: ReferralRecordData) = catalogStore.saveReferral(item)
+    fun deleteReferral(id: String) = catalogStore.deleteReferral(id)
 
-        for (i in 0 until array.length()) {
-            val obj = array.optJSONObject(i) ?: continue
-            result.add(
-                BlacklistRecordData(
-                    id = obj.optString("id").ifBlank { UUID.randomUUID().toString() },
-                    fullName = obj.optString("fullName").trim(),
-                    idNumber = obj.optString("idNumber").trim(),
-                    phone = obj.optString("phone").trim(),
-                    reason = obj.optString("reason").trim(),
-                    notes = obj.optString("notes").trim(),
-                    addedDate = obj.optString("addedDate", LocalDate.now().toString()).trim(),
-                    createdAt = obj.optLong("createdAt", System.currentTimeMillis())
-                )
-            )
-        }
-
-        return result
-            .sortedByDescending { it.createdAt }
-            .distinctBy { it.id }
-    }
-
-    fun saveBlacklistRecord(item: BlacklistRecordData) {
-        val current = readBlacklist().toMutableList()
-        val index = current.indexOfFirst { it.id == item.id }
-        val normalized = item.copy(
-            fullName = item.fullName.trim(),
-            idNumber = item.idNumber.trim(),
-            phone = item.phone.trim(),
-            reason = item.reason.trim(),
-            notes = item.notes.trim(),
-            addedDate = item.addedDate.trim().ifBlank { LocalDate.now().toString() }
-        )
-
-        if (index >= 0) {
-            current[index] = normalized
-            appendHistory("Lista negra actualizada: ${normalized.fullName}")
-        } else {
-            current.add(0, normalized)
-            appendHistory("Lista negra agregada: ${normalized.fullName}")
-        }
-
-        saveBlacklist(current)
-    }
-
-    fun deleteBlacklistRecord(id: String) {
-        val current = readBlacklist().toMutableList()
-        val removed = current.firstOrNull { it.id == id } ?: return
-        current.removeAll { it.id == id }
-        saveBlacklist(current)
-        appendHistory("Lista negra eliminada: ${removed.fullName}")
-    }
-
-    private fun saveReferralsInternal(records: List<ReferralRecordData>) {
-        val array = JSONArray()
-        records.forEach { item ->
-            array.put(
-                JSONObject().apply {
-                    put("id", item.id)
-                    put("referralDate", item.referralDate)
-                    put("referredClient", item.referredClient)
-                    put("referredBy", item.referredBy)
-                    put("loanAmount", item.loanAmount)
-                    put("commissionPercent", item.commissionPercent)
-                    put("status", item.status)
-                    put("notes", item.notes)
-                    put("createdAt", item.createdAt)
-                }
-            )
-        }
-        prefs.edit().putString(referralsKey(), array.toString()).apply()
-    }
-
-    fun readReferrals(): List<ReferralRecordData> {
-        val array = safeArray(prefs.getString(referralsKey(), "[]"))
-        val result = mutableListOf<ReferralRecordData>()
-
-        for (i in 0 until array.length()) {
-            val obj = array.optJSONObject(i) ?: continue
-            result.add(
-                ReferralRecordData(
-                    id = obj.optString("id").ifBlank { UUID.randomUUID().toString() },
-                    referralDate = obj.optString("referralDate", LocalDate.now().toString()).trim(),
-                    referredClient = obj.optString("referredClient").trim(),
-                    referredBy = obj.optString("referredBy").trim(),
-                    loanAmount = obj.optDouble("loanAmount", 0.0).coerceAtLeast(0.0),
-                    commissionPercent = obj.optDouble("commissionPercent", 10.0).coerceAtLeast(0.0),
-                    status = obj.optString("status", "PENDIENTE").trim().ifBlank { "PENDIENTE" },
-                    notes = obj.optString("notes").trim(),
-                    createdAt = obj.optLong("createdAt", System.currentTimeMillis())
-                )
-            )
-        }
-
-        return result
-            .sortedByDescending { it.createdAt }
-            .distinctBy { it.id }
-    }
-
-    fun saveReferral(item: ReferralRecordData) {
-        val current = readReferrals().toMutableList()
-        val index = current.indexOfFirst { it.id == item.id }
-        val normalized = item.copy(
-            referralDate = item.referralDate.trim().ifBlank { LocalDate.now().toString() },
-            referredClient = item.referredClient.trim(),
-            referredBy = item.referredBy.trim(),
-            loanAmount = item.loanAmount.coerceAtLeast(0.0),
-            commissionPercent = item.commissionPercent.coerceAtLeast(0.0),
-            status = item.status.trim().uppercase().ifBlank { "PENDIENTE" },
-            notes = item.notes.trim()
-        )
-
-        if (index >= 0) {
-            current[index] = normalized
-            appendHistory("Referido actualizado: ${normalized.referredClient}")
-        } else {
-            current.add(0, normalized)
-            appendHistory("Referido guardado: ${normalized.referredClient}")
-        }
-
-        saveReferralsInternal(current)
-    }
-
-    fun deleteReferral(id: String) {
-        val current = readReferrals().toMutableList()
-        val removed = current.firstOrNull { it.id == id } ?: return
-        current.removeAll { it.id == id }
-        saveReferralsInternal(current)
-        appendHistory("Referido eliminado: ${removed.referredClient}")
-    }
-
-    private fun saveFrequentUsersInternal(users: List<FrequentUserPaymentData>) {
-        val array = JSONArray()
-        users.forEach { user ->
-            array.put(
-                JSONObject().apply {
-                    put("id", user.id)
-                    put("fullName", user.fullName)
-                    put("idNumber", user.idNumber)
-                    put("phone", user.phone)
-                    put("bankName", user.bankName)
-                    put("bankAccount", user.bankAccount)
-                    put("mobilePaymentPhone", user.mobilePaymentPhone)
-                    put("paymentAlias", user.paymentAlias)
-                    put("notes", user.notes)
-                    put("createdAt", user.createdAt)
-                }
-            )
-        }
-        prefs.edit().putString(frequentUsersKey(), array.toString()).apply()
-    }
-
-    fun readFrequentUsers(): List<FrequentUserPaymentData> {
-        val array = safeArray(prefs.getString(frequentUsersKey(), "[]"))
-        val result = mutableListOf<FrequentUserPaymentData>()
-
-        for (i in 0 until array.length()) {
-            val obj = array.optJSONObject(i) ?: continue
-            result.add(
-                FrequentUserPaymentData(
-                    id = obj.optString("id").ifBlank { UUID.randomUUID().toString() },
-                    fullName = obj.optString("fullName").trim(),
-                    idNumber = obj.optString("idNumber").trim(),
-                    phone = obj.optString("phone").trim(),
-                    bankName = obj.optString("bankName").trim(),
-                    bankAccount = obj.optString("bankAccount").trim(),
-                    mobilePaymentPhone = obj.optString("mobilePaymentPhone").trim(),
-                    paymentAlias = obj.optString("paymentAlias").trim(),
-                    notes = obj.optString("notes").trim(),
-                    createdAt = obj.optLong("createdAt", System.currentTimeMillis())
-                )
-            )
-        }
-
-        return result
-            .sortedByDescending { it.createdAt }
-            .distinctBy { it.id }
-    }
-
-    fun saveFrequentUser(user: FrequentUserPaymentData) {
-        val current = readFrequentUsers().toMutableList()
-        val index = current.indexOfFirst { it.id == user.id }
-        val normalized = user.copy(
-            fullName = user.fullName.trim(),
-            idNumber = user.idNumber.trim(),
-            phone = user.phone.trim(),
-            bankName = user.bankName.trim(),
-            bankAccount = user.bankAccount.trim(),
-            mobilePaymentPhone = user.mobilePaymentPhone.trim(),
-            paymentAlias = user.paymentAlias.trim(),
-            notes = user.notes.trim()
-        )
-
-        if (index >= 0) {
-            current[index] = normalized
-            appendHistory("Usuario frecuente actualizado: ${normalized.fullName}")
-        } else {
-            current.add(0, normalized)
-            appendHistory("Usuario frecuente guardado: ${normalized.fullName}")
-        }
-
-        saveFrequentUsersInternal(current)
-    }
-
-    fun deleteFrequentUser(id: String) {
-        val current = readFrequentUsers().toMutableList()
-        val removed = current.firstOrNull { it.id == id } ?: return
-        current.removeAll { it.id == id }
-        saveFrequentUsersInternal(current)
-        appendHistory("Usuario frecuente eliminado: ${removed.fullName}")
-    }
+    private fun saveFrequentUsersInternal(users: List<FrequentUserPaymentData>) = catalogStore.saveFrequentUsersInternal(users)
+    fun readFrequentUsers(): List<FrequentUserPaymentData> = catalogStore.readFrequentUsers()
+    fun saveFrequentUser(user: FrequentUserPaymentData) = catalogStore.saveFrequentUser(user)
+    fun deleteFrequentUser(id: String) = catalogStore.deleteFrequentUser(id)
     private fun deletedLoansKey(): String = "deleted_loans_json"
 
     private fun saveDeletedLoanSnapshots(records: List<DeletedLoanSnapshotData>) {
