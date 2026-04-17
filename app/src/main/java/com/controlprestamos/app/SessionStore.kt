@@ -16,7 +16,7 @@ data class UserProfileData(
     val mobilePaymentPhone: String = "",
     val bankName: String = "",
     val bankAccount: String = "",
-    val personalizedMessage: String = "Hola, buenos dÃƒÂ­as. Le escribo por el vencimiento de su prÃƒÂ©stamo. A continuaciÃƒÂ³n le comparto los datos de pago. Muchas gracias."
+    val personalizedMessage: String = "Hola, buenos días. Le escribo por el vencimiento de su préstamo. A continuación le comparto los datos de pago. Muchas gracias."
 )
 
 data class ManualLoanData(
@@ -407,7 +407,7 @@ class SessionStore(context: Context) {
             setActiveLoanId("")
         }
 
-        appendHistory("PrÃƒÂ©stamo enviado a papelera: ${removed.fullName}")
+        appendHistory("Préstamo enviado a papelera: ${removed.fullName}")
         return true
     }
 
@@ -419,7 +419,7 @@ class SessionStore(context: Context) {
         if (index < 0) {
             return RestoreDeletedLoanResult(
                 success = false,
-                message = "El registro ya no existe en la papelera o venciÃƒÂ³ su tiempo de retenciÃƒÂ³n."
+                message = "El registro ya no existe en la papelera o venció su tiempo de retención."
             )
         }
 
@@ -428,7 +428,7 @@ class SessionStore(context: Context) {
         if (hasPotentialRestoreDuplicate(snapshot.loan)) {
             return RestoreDeletedLoanResult(
                 success = false,
-                message = "Ya existe un prÃƒÂ©stamo muy parecido activo. Revisa la cartera antes de restaurar para evitar duplicados."
+                message = "Ya existe un préstamo muy parecido activo. Revisa la cartera antes de restaurar para evitar duplicados."
             )
         }
 
@@ -463,17 +463,17 @@ class SessionStore(context: Context) {
         saveDeletedLoanSnapshots(deleted)
 
         if (loanIdAlreadyExists) {
-            appendHistory("PrÃƒÂ©stamo restaurado: ${restoredLoan.fullName} (nuevo identificador)")
+            appendHistory("Préstamo restaurado: ${restoredLoan.fullName} (nuevo identificador)")
             return RestoreDeletedLoanResult(
                 success = true,
-                message = "PrÃƒÂ©stamo restaurado correctamente. Se asignÃƒÂ³ un nuevo identificador interno para evitar conflicto con uno existente."
+                message = "Préstamo restaurado correctamente. Se asignó un nuevo identificador interno para evitar conflicto con uno existente."
             )
         }
 
-        appendHistory("PrÃƒÂ©stamo restaurado: ${restoredLoan.fullName}")
+        appendHistory("Préstamo restaurado: ${restoredLoan.fullName}")
         return RestoreDeletedLoanResult(
             success = true,
-            message = "PrÃƒÂ©stamo restaurado correctamente."
+            message = "Préstamo restaurado correctamente."
         )
     }
 
@@ -492,7 +492,7 @@ class SessionStore(context: Context) {
         deleted.removeAt(index)
         saveDeletedLoanSnapshots(deleted)
 
-        appendHistory("PrÃƒÂ©stamo eliminado definitivamente: ${snapshot.loan.fullName}")
+        appendHistory("Préstamo eliminado definitivamente: ${snapshot.loan.fullName}")
         return true
     }
 
@@ -577,7 +577,7 @@ class SessionStore(context: Context) {
         saveReferralsInternal((referrals + readReferrals()).sortedByDescending { it.createdAt }.distinctBy { it.id })
         saveFrequentUsersInternal((frequentUsers + readFrequentUsers()).sortedByDescending { it.createdAt }.distinctBy { it.id })
 
-        appendHistory("Respaldo restaurado en modo fusiÃƒÂ³n")
+        appendHistory("Respaldo restaurado en modo fusión")
 
         return loans.distinctBy { it.id }.size +
             payments.distinctBy { it.id }.size +

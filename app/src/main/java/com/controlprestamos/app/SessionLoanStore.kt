@@ -139,10 +139,10 @@ class SessionLoanStore(
 
         if (index >= 0) {
             current[index] = normalized
-            onHistory("PrÃƒÂ©stamo actualizado: ${normalized.fullName}")
+            onHistory("Préstamo actualizado: ${normalized.fullName}")
         } else {
             current.add(0, normalized)
-            onHistory("PrÃƒÂ©stamo registrado: ${normalized.fullName}")
+            onHistory("Préstamo registrado: ${normalized.fullName}")
         }
 
         saveLoans(current)
@@ -164,7 +164,7 @@ class SessionLoanStore(
             setActiveLoanId("")
         }
 
-        onHistory("PrÃƒÂ©stamo eliminado: ${removed.fullName}")
+        onHistory("Préstamo eliminado: ${removed.fullName}")
     }
 
     fun setActiveLoanId(id: String) {
@@ -312,7 +312,7 @@ class SessionLoanStore(
                 previousPendingAmount = previousPending,
                 newPendingAmount = newPending,
                 note = if (paymentAmount > appliedAmount) {
-                    "Se aplicÃƒÂ³ solo el pendiente restante."
+                    "Se aplicó solo el pendiente restante."
                 } else {
                     ""
                 }
@@ -320,7 +320,7 @@ class SessionLoanStore(
         )
 
         onHistory(
-            "Pago registrado: ${loan.fullName} abonÃƒÂ³ ${"%.2f".format(java.util.Locale.US, appliedAmount)} USD. Pendiente: ${"%.2f".format(java.util.Locale.US, newPending)} USD"
+            "Pago registrado: ${loan.fullName} abonó ${"%.2f".format(java.util.Locale.US, appliedAmount)} USD. Pendiente: ${"%.2f".format(java.util.Locale.US, newPending)} USD"
         )
 
         return true
@@ -336,7 +336,7 @@ class SessionLoanStore(
                 status = STATUS_COLLECTED
             )
         )
-        onHistory("PrÃƒÂ©stamo cobrado: ${loan.fullName}")
+        onHistory("Préstamo cobrado: ${loan.fullName}")
         return true
     }
 
@@ -345,7 +345,7 @@ class SessionLoanStore(
         if (loan.status == STATUS_LOST) return false
 
         upsertLoanSilently(loan.copy(status = STATUS_LOST))
-        onHistory("PrÃƒÂ©stamo perdido: ${loan.fullName}")
+        onHistory("Préstamo perdido: ${loan.fullName}")
         return true
     }
 
