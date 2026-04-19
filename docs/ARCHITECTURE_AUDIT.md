@@ -1,6 +1,6 @@
 # Architecture Audit - ControlPrestamosApp
 
-Generated: 2026-04-19 14:44:48
+Generated: 2026-04-19 14:49:21
 
 ## Executive Summary
 
@@ -18,167 +18,167 @@ This audit reviews the current Kotlin/Android project structure without moving f
 
 | Package | Files |
 |---|---:|
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 40 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 2 |
+| `com.controlprestamos.app` | 40 |
+| `com.controlprestamos` | 2 |
 
 ## Responsibility Categories
 
 | Category | Files |
 |---|---:|
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 26 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 6 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 2 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 2 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 2 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 2 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 2 |
+| `ui-screen` | 26 |
+| `data-store` | 6 |
+| `manager` | 2 |
+| `app-entry` | 2 |
+| `ui-core` | 2 |
+| `navigation` | 2 |
+| `android-receiver` | 2 |
 
 ## Feature Guess
 
 | Feature Area | Files |
 |---|---:|
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 16 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 5 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 5 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 4 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 4 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 2 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 2 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 2 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 1 |
-| $(Microsoft.PowerShell.Commands.GroupInfo.Name) | 1 |
+| `loans` | 16 |
+| `clients-profile` | 5 |
+| `uncategorized` | 5 |
+| `security-reminders` | 4 |
+| `backup-trash` | 4 |
+| `analytics-dashboard` | 2 |
+| `navigation` | 2 |
+| `core-ui` | 2 |
+| `app` | 1 |
+| `search` | 1 |
 
 ## Largest Kotlin Files
 
 | Severity | Lines | File | Category | Feature Guess |
 |---|---:|---|---|---|
-| CRITICAL | 574 | $(@{File=app/src/main/java/com/controlprestamos/app/LoansScreen.kt; Name=LoansScreen.kt; Package=com.controlprestamos.app; Lines=574; Severity=CRITICAL; Category=ui-screen; FeatureGuess=loans; Composables=6; Functions=19; Classes=0; Objects=0; Imports=49; Todos=5; NavMentions=6; SessionStoreMentions=9}.File) | ui-screen | loans |
-| CRITICAL | 545 | $(@{File=app/src/main/java/com/controlprestamos/app/ReferralsScreen.kt; Name=ReferralsScreen.kt; Package=com.controlprestamos.app; Lines=545; Severity=CRITICAL; Category=ui-screen; FeatureGuess=clients-profile; Composables=4; Functions=10; Classes=0; Objects=0; Imports=27; Todos=6; NavMentions=0; SessionStoreMentions=6}.File) | ui-screen | clients-profile |
-| HIGH | 473 | $(@{File=app/src/main/java/com/controlprestamos/app/BackupExportScreen.kt; Name=BackupExportScreen.kt; Package=com.controlprestamos.app; Lines=473; Severity=HIGH; Category=ui-screen; FeatureGuess=backup-trash; Composables=2; Functions=15; Classes=0; Objects=0; Imports=30; Todos=0; NavMentions=5; SessionStoreMentions=20}.File) | ui-screen | backup-trash |
-| HIGH | 467 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanDetailScreen.kt; Name=LoanDetailScreen.kt; Package=com.controlprestamos.app; Lines=467; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=6; Classes=0; Objects=0; Imports=31; Todos=0; NavMentions=10; SessionStoreMentions=12}.File) | ui-screen | loans |
-| HIGH | 461 | $(@{File=app/src/main/java/com/controlprestamos/app/AppDesign.kt; Name=AppDesign.kt; Package=com.controlprestamos.app; Lines=461; Severity=HIGH; Category=ui-core; FeatureGuess=core-ui; Composables=16; Functions=15; Classes=0; Objects=2; Imports=41; Todos=0; NavMentions=10; SessionStoreMentions=0}.File) | ui-core | core-ui |
-| HIGH | 455 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanCollectionNoticeScreen.kt; Name=LoanCollectionNoticeScreen.kt; Package=com.controlprestamos.app; Lines=455; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=12; Classes=0; Objects=0; Imports=28; Todos=0; NavMentions=8; SessionStoreMentions=4}.File) | ui-screen | loans |
-| HIGH | 421 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionBackupTrashStore.kt; Name=SessionBackupTrashStore.kt; Package=com.controlprestamos.app; Lines=421; Severity=HIGH; Category=data-store; FeatureGuess=backup-trash; Composables=0; Functions=14; Classes=1; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | data-store | backup-trash |
-| HIGH | 420 | $(@{File=app/src/main/java/com/controlprestamos/app/RestoreBackupScreen.kt; Name=RestoreBackupScreen.kt; Package=com.controlprestamos.app; Lines=420; Severity=HIGH; Category=ui-screen; FeatureGuess=backup-trash; Composables=1; Functions=12; Classes=0; Objects=0; Imports=25; Todos=0; NavMentions=5; SessionStoreMentions=4}.File) | ui-screen | backup-trash |
-| HIGH | 416 | $(@{File=app/src/main/java/com/controlprestamos/app/AppFields.kt; Name=AppFields.kt; Package=com.controlprestamos.app; Lines=416; Severity=HIGH; Category=ui-core; FeatureGuess=core-ui; Composables=1; Functions=28; Classes=0; Objects=0; Imports=17; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | ui-core | core-ui |
-| HIGH | 398 | $(@{File=app/src/main/java/com/controlprestamos/app/FrequentUsersScreen.kt; Name=FrequentUsersScreen.kt; Package=com.controlprestamos.app; Lines=398; Severity=HIGH; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=6; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=5; SessionStoreMentions=6}.File) | ui-screen | clients-profile |
-| HIGH | 363 | $(@{File=app/src/main/java/com/controlprestamos/app/EditLoanScreen.kt; Name=EditLoanScreen.kt; Package=com.controlprestamos.app; Lines=363; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=1; Functions=4; Classes=0; Objects=0; Imports=18; Todos=0; NavMentions=8; SessionStoreMentions=6}.File) | ui-screen | loans |
-| HIGH | 354 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionLoanStore.kt; Name=SessionLoanStore.kt; Package=com.controlprestamos.app; Lines=354; Severity=HIGH; Category=data-store; FeatureGuess=loans; Composables=0; Functions=22; Classes=1; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | data-store | loans |
-| MEDIUM | 338 | $(@{File=app/src/main/java/com/controlprestamos/app/DashboardScreen.kt; Name=DashboardScreen.kt; Package=com.controlprestamos.app; Lines=338; Severity=MEDIUM; Category=ui-screen; FeatureGuess=analytics-dashboard; Composables=2; Functions=9; Classes=0; Objects=0; Imports=20; Todos=0; NavMentions=0; SessionStoreMentions=4}.File) | ui-screen | analytics-dashboard |
-| MEDIUM | 338 | $(@{File=app/src/main/java/com/controlprestamos/app/NewLoanScreen.kt; Name=NewLoanScreen.kt; Package=com.controlprestamos.app; Lines=338; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=1; Functions=4; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=7; SessionStoreMentions=4}.File) | ui-screen | loans |
-| MEDIUM | 314 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionStore.kt; Name=SessionStore.kt; Package=com.controlprestamos.app; Lines=314; Severity=MEDIUM; Category=data-store; FeatureGuess=uncategorized; Composables=0; Functions=68; Classes=9; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=1}.File) | data-store | uncategorized |
-| MEDIUM | 312 | $(@{File=app/src/main/java/com/controlprestamos/app/BlacklistScreen.kt; Name=BlacklistScreen.kt; Package=com.controlprestamos.app; Lines=312; Severity=MEDIUM; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=5; Classes=0; Objects=0; Imports=18; Todos=0; NavMentions=0; SessionStoreMentions=6}.File) | ui-screen | clients-profile |
-| MEDIUM | 307 | $(@{File=app/src/main/java/com/controlprestamos/app/WeeklyViewScreen.kt; Name=WeeklyViewScreen.kt; Package=com.controlprestamos.app; Lines=307; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=26; Todos=0; NavMentions=11; SessionStoreMentions=10}.File) | ui-screen | loans |
-| MEDIUM | 296 | $(@{File=app/src/main/java/com/controlprestamos/app/MonthlyViewScreen.kt; Name=MonthlyViewScreen.kt; Package=com.controlprestamos.app; Lines=296; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=22; Todos=0; NavMentions=11; SessionStoreMentions=10}.File) | ui-screen | loans |
-| MEDIUM | 287 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanReminderManager.kt; Name=LoanReminderManager.kt; Package=com.controlprestamos.app; Lines=287; Severity=MEDIUM; Category=manager; FeatureGuess=loans; Composables=0; Functions=18; Classes=0; Objects=1; Imports=16; Todos=0; NavMentions=0; SessionStoreMentions=3}.File) | manager | loans |
-| MEDIUM | 283 | $(@{File=app/src/main/java/com/controlprestamos/app/MoreScreen.kt; Name=MoreScreen.kt; Package=com.controlprestamos.app; Lines=283; Severity=MEDIUM; Category=ui-screen; FeatureGuess=uncategorized; Composables=6; Functions=4; Classes=0; Objects=0; Imports=27; Todos=0; NavMentions=19; SessionStoreMentions=5}.File) | ui-screen | uncategorized |
-| MEDIUM | 280 | $(@{File=app/src/main/java/com/controlprestamos/app/GlobalSearchScreen.kt; Name=GlobalSearchScreen.kt; Package=com.controlprestamos.app; Lines=280; Severity=MEDIUM; Category=ui-screen; FeatureGuess=search; Composables=1; Functions=5; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=7; SessionStoreMentions=8}.File) | ui-screen | search |
-| MEDIUM | 273 | $(@{File=app/src/main/java/com/controlprestamos/app/DailySummaryScreen.kt; Name=DailySummaryScreen.kt; Package=com.controlprestamos.app; Lines=273; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=7; Classes=0; Objects=0; Imports=23; Todos=0; NavMentions=7; SessionStoreMentions=6}.File) | ui-screen | loans |
-| MEDIUM | 271 | $(@{File=app/src/main/java/com/controlprestamos/app/CollectionAgendaScreen.kt; Name=CollectionAgendaScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=13; SessionStoreMentions=11}.File) | ui-screen | loans |
-| MEDIUM | 271 | $(@{File=app/src/main/java/com/controlprestamos/app/TrashScreen.kt; Name=TrashScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=backup-trash; Composables=3; Functions=7; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=5; SessionStoreMentions=7}.File) | ui-screen | backup-trash |
-| MEDIUM | 268 | $(@{File=app/src/main/java/com/controlprestamos/app/NavGraph.kt; Name=NavGraph.kt; Package=com.controlprestamos.app; Lines=268; Severity=MEDIUM; Category=navigation; FeatureGuess=navigation; Composables=1; Functions=3; Classes=0; Objects=0; Imports=10; Todos=0; NavMentions=52; SessionStoreMentions=57}.File) | navigation | navigation |
+| CRITICAL | 574 | `app/src/main/java/com/controlprestamos/app/LoansScreen.kt` | ui-screen | loans |
+| CRITICAL | 545 | `app/src/main/java/com/controlprestamos/app/ReferralsScreen.kt` | ui-screen | clients-profile |
+| HIGH | 473 | `app/src/main/java/com/controlprestamos/app/BackupExportScreen.kt` | ui-screen | backup-trash |
+| HIGH | 467 | `app/src/main/java/com/controlprestamos/app/LoanDetailScreen.kt` | ui-screen | loans |
+| HIGH | 461 | `app/src/main/java/com/controlprestamos/app/AppDesign.kt` | ui-core | core-ui |
+| HIGH | 455 | `app/src/main/java/com/controlprestamos/app/LoanCollectionNoticeScreen.kt` | ui-screen | loans |
+| HIGH | 421 | `app/src/main/java/com/controlprestamos/app/SessionBackupTrashStore.kt` | data-store | backup-trash |
+| HIGH | 420 | `app/src/main/java/com/controlprestamos/app/RestoreBackupScreen.kt` | ui-screen | backup-trash |
+| HIGH | 416 | `app/src/main/java/com/controlprestamos/app/AppFields.kt` | ui-core | core-ui |
+| HIGH | 398 | `app/src/main/java/com/controlprestamos/app/FrequentUsersScreen.kt` | ui-screen | clients-profile |
+| HIGH | 363 | `app/src/main/java/com/controlprestamos/app/EditLoanScreen.kt` | ui-screen | loans |
+| HIGH | 354 | `app/src/main/java/com/controlprestamos/app/SessionLoanStore.kt` | data-store | loans |
+| MEDIUM | 338 | `app/src/main/java/com/controlprestamos/app/DashboardScreen.kt` | ui-screen | analytics-dashboard |
+| MEDIUM | 338 | `app/src/main/java/com/controlprestamos/app/NewLoanScreen.kt` | ui-screen | loans |
+| MEDIUM | 314 | `app/src/main/java/com/controlprestamos/app/SessionStore.kt` | data-store | uncategorized |
+| MEDIUM | 312 | `app/src/main/java/com/controlprestamos/app/BlacklistScreen.kt` | ui-screen | clients-profile |
+| MEDIUM | 307 | `app/src/main/java/com/controlprestamos/app/WeeklyViewScreen.kt` | ui-screen | loans |
+| MEDIUM | 296 | `app/src/main/java/com/controlprestamos/app/MonthlyViewScreen.kt` | ui-screen | loans |
+| MEDIUM | 287 | `app/src/main/java/com/controlprestamos/app/LoanReminderManager.kt` | manager | loans |
+| MEDIUM | 283 | `app/src/main/java/com/controlprestamos/app/MoreScreen.kt` | ui-screen | uncategorized |
+| MEDIUM | 280 | `app/src/main/java/com/controlprestamos/app/GlobalSearchScreen.kt` | ui-screen | search |
+| MEDIUM | 273 | `app/src/main/java/com/controlprestamos/app/DailySummaryScreen.kt` | ui-screen | loans |
+| MEDIUM | 271 | `app/src/main/java/com/controlprestamos/app/CollectionAgendaScreen.kt` | ui-screen | loans |
+| MEDIUM | 271 | `app/src/main/java/com/controlprestamos/app/TrashScreen.kt` | ui-screen | backup-trash |
+| MEDIUM | 268 | `app/src/main/java/com/controlprestamos/app/NavGraph.kt` | navigation | navigation |
 
 ## Screen Files
 
 | Lines | File | Composables | Functions | SessionStore Mentions | Nav Mentions |
 |---:|---|---:|---:|---:|---:|
-| 574 | $(@{File=app/src/main/java/com/controlprestamos/app/LoansScreen.kt; Name=LoansScreen.kt; Package=com.controlprestamos.app; Lines=574; Severity=CRITICAL; Category=ui-screen; FeatureGuess=loans; Composables=6; Functions=19; Classes=0; Objects=0; Imports=49; Todos=5; NavMentions=6; SessionStoreMentions=9}.File) | 6 | 19 | 9 | 6 |
-| 545 | $(@{File=app/src/main/java/com/controlprestamos/app/ReferralsScreen.kt; Name=ReferralsScreen.kt; Package=com.controlprestamos.app; Lines=545; Severity=CRITICAL; Category=ui-screen; FeatureGuess=clients-profile; Composables=4; Functions=10; Classes=0; Objects=0; Imports=27; Todos=6; NavMentions=0; SessionStoreMentions=6}.File) | 4 | 10 | 6 | 0 |
-| 473 | $(@{File=app/src/main/java/com/controlprestamos/app/BackupExportScreen.kt; Name=BackupExportScreen.kt; Package=com.controlprestamos.app; Lines=473; Severity=HIGH; Category=ui-screen; FeatureGuess=backup-trash; Composables=2; Functions=15; Classes=0; Objects=0; Imports=30; Todos=0; NavMentions=5; SessionStoreMentions=20}.File) | 2 | 15 | 20 | 5 |
-| 467 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanDetailScreen.kt; Name=LoanDetailScreen.kt; Package=com.controlprestamos.app; Lines=467; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=6; Classes=0; Objects=0; Imports=31; Todos=0; NavMentions=10; SessionStoreMentions=12}.File) | 4 | 6 | 12 | 10 |
-| 455 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanCollectionNoticeScreen.kt; Name=LoanCollectionNoticeScreen.kt; Package=com.controlprestamos.app; Lines=455; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=12; Classes=0; Objects=0; Imports=28; Todos=0; NavMentions=8; SessionStoreMentions=4}.File) | 3 | 12 | 4 | 8 |
-| 420 | $(@{File=app/src/main/java/com/controlprestamos/app/RestoreBackupScreen.kt; Name=RestoreBackupScreen.kt; Package=com.controlprestamos.app; Lines=420; Severity=HIGH; Category=ui-screen; FeatureGuess=backup-trash; Composables=1; Functions=12; Classes=0; Objects=0; Imports=25; Todos=0; NavMentions=5; SessionStoreMentions=4}.File) | 1 | 12 | 4 | 5 |
-| 398 | $(@{File=app/src/main/java/com/controlprestamos/app/FrequentUsersScreen.kt; Name=FrequentUsersScreen.kt; Package=com.controlprestamos.app; Lines=398; Severity=HIGH; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=6; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=5; SessionStoreMentions=6}.File) | 1 | 6 | 6 | 5 |
-| 363 | $(@{File=app/src/main/java/com/controlprestamos/app/EditLoanScreen.kt; Name=EditLoanScreen.kt; Package=com.controlprestamos.app; Lines=363; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=1; Functions=4; Classes=0; Objects=0; Imports=18; Todos=0; NavMentions=8; SessionStoreMentions=6}.File) | 1 | 4 | 6 | 8 |
-| 338 | $(@{File=app/src/main/java/com/controlprestamos/app/NewLoanScreen.kt; Name=NewLoanScreen.kt; Package=com.controlprestamos.app; Lines=338; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=1; Functions=4; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=7; SessionStoreMentions=4}.File) | 1 | 4 | 4 | 7 |
-| 338 | $(@{File=app/src/main/java/com/controlprestamos/app/DashboardScreen.kt; Name=DashboardScreen.kt; Package=com.controlprestamos.app; Lines=338; Severity=MEDIUM; Category=ui-screen; FeatureGuess=analytics-dashboard; Composables=2; Functions=9; Classes=0; Objects=0; Imports=20; Todos=0; NavMentions=0; SessionStoreMentions=4}.File) | 2 | 9 | 4 | 0 |
-| 312 | $(@{File=app/src/main/java/com/controlprestamos/app/BlacklistScreen.kt; Name=BlacklistScreen.kt; Package=com.controlprestamos.app; Lines=312; Severity=MEDIUM; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=5; Classes=0; Objects=0; Imports=18; Todos=0; NavMentions=0; SessionStoreMentions=6}.File) | 1 | 5 | 6 | 0 |
-| 307 | $(@{File=app/src/main/java/com/controlprestamos/app/WeeklyViewScreen.kt; Name=WeeklyViewScreen.kt; Package=com.controlprestamos.app; Lines=307; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=26; Todos=0; NavMentions=11; SessionStoreMentions=10}.File) | 3 | 3 | 10 | 11 |
-| 296 | $(@{File=app/src/main/java/com/controlprestamos/app/MonthlyViewScreen.kt; Name=MonthlyViewScreen.kt; Package=com.controlprestamos.app; Lines=296; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=22; Todos=0; NavMentions=11; SessionStoreMentions=10}.File) | 3 | 3 | 10 | 11 |
-| 283 | $(@{File=app/src/main/java/com/controlprestamos/app/MoreScreen.kt; Name=MoreScreen.kt; Package=com.controlprestamos.app; Lines=283; Severity=MEDIUM; Category=ui-screen; FeatureGuess=uncategorized; Composables=6; Functions=4; Classes=0; Objects=0; Imports=27; Todos=0; NavMentions=19; SessionStoreMentions=5}.File) | 6 | 4 | 5 | 19 |
-| 280 | $(@{File=app/src/main/java/com/controlprestamos/app/GlobalSearchScreen.kt; Name=GlobalSearchScreen.kt; Package=com.controlprestamos.app; Lines=280; Severity=MEDIUM; Category=ui-screen; FeatureGuess=search; Composables=1; Functions=5; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=7; SessionStoreMentions=8}.File) | 1 | 5 | 8 | 7 |
-| 273 | $(@{File=app/src/main/java/com/controlprestamos/app/DailySummaryScreen.kt; Name=DailySummaryScreen.kt; Package=com.controlprestamos.app; Lines=273; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=7; Classes=0; Objects=0; Imports=23; Todos=0; NavMentions=7; SessionStoreMentions=6}.File) | 4 | 7 | 6 | 7 |
-| 271 | $(@{File=app/src/main/java/com/controlprestamos/app/CollectionAgendaScreen.kt; Name=CollectionAgendaScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=13; SessionStoreMentions=11}.File) | 3 | 3 | 11 | 13 |
-| 271 | $(@{File=app/src/main/java/com/controlprestamos/app/TrashScreen.kt; Name=TrashScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=backup-trash; Composables=3; Functions=7; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=5; SessionStoreMentions=7}.File) | 3 | 7 | 7 | 5 |
-| 261 | $(@{File=app/src/main/java/com/controlprestamos/app/ReminderSettingsScreen.kt; Name=ReminderSettingsScreen.kt; Package=com.controlprestamos.app; Lines=261; Severity=MEDIUM; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=2; Classes=0; Objects=0; Imports=29; Todos=0; NavMentions=5; SessionStoreMentions=0}.File) | 1 | 2 | 0 | 5 |
-| 255 | $(@{File=app/src/main/java/com/controlprestamos/app/HistoryScreen.kt; Name=HistoryScreen.kt; Package=com.controlprestamos.app; Lines=255; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=4; Classes=0; Objects=0; Imports=20; Todos=1; NavMentions=0; SessionStoreMentions=8}.File) | 3 | 4 | 8 | 0 |
-| 227 | $(@{File=app/src/main/java/com/controlprestamos/app/EditProfileScreen.kt; Name=EditProfileScreen.kt; Package=com.controlprestamos.app; Lines=227; Severity=OK; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=1; Classes=0; Objects=0; Imports=14; Todos=0; NavMentions=6; SessionStoreMentions=4}.File) | 1 | 1 | 4 | 6 |
-| 224 | $(@{File=app/src/main/java/com/controlprestamos/app/LockScreen.kt; Name=LockScreen.kt; Package=com.controlprestamos.app; Lines=224; Severity=OK; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=1; Classes=0; Objects=1; Imports=26; Todos=0; NavMentions=0; SessionStoreMentions=19}.File) | 1 | 1 | 19 | 0 |
-| 218 | $(@{File=app/src/main/java/com/controlprestamos/app/ReportsScreen.kt; Name=ReportsScreen.kt; Package=com.controlprestamos.app; Lines=218; Severity=OK; Category=ui-screen; FeatureGuess=analytics-dashboard; Composables=2; Functions=2; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=5; SessionStoreMentions=5}.File) | 2 | 2 | 5 | 5 |
-| 188 | $(@{File=app/src/main/java/com/controlprestamos/app/ProfileScreen.kt; Name=ProfileScreen.kt; Package=com.controlprestamos.app; Lines=188; Severity=OK; Category=ui-screen; FeatureGuess=clients-profile; Composables=2; Functions=2; Classes=0; Objects=0; Imports=22; Todos=0; NavMentions=6; SessionStoreMentions=3}.File) | 2 | 2 | 3 | 6 |
-| 176 | $(@{File=app/src/main/java/com/controlprestamos/app/SecuritySettingsScreen.kt; Name=SecuritySettingsScreen.kt; Package=com.controlprestamos.app; Lines=176; Severity=OK; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=1; Classes=0; Objects=0; Imports=24; Todos=0; NavMentions=5; SessionStoreMentions=18}.File) | 1 | 1 | 18 | 5 |
-| 109 | $(@{File=app/src/main/java/com/controlprestamos/app/PrivacyPolicyScreen.kt; Name=PrivacyPolicyScreen.kt; Package=com.controlprestamos.app; Lines=109; Severity=OK; Category=ui-screen; FeatureGuess=uncategorized; Composables=1; Functions=1; Classes=0; Objects=0; Imports=14; Todos=0; NavMentions=5; SessionStoreMentions=0}.File) | 1 | 1 | 0 | 5 |
+| 574 | `app/src/main/java/com/controlprestamos/app/LoansScreen.kt` | 6 | 19 | 9 | 6 |
+| 545 | `app/src/main/java/com/controlprestamos/app/ReferralsScreen.kt` | 4 | 10 | 6 | 0 |
+| 473 | `app/src/main/java/com/controlprestamos/app/BackupExportScreen.kt` | 2 | 15 | 20 | 5 |
+| 467 | `app/src/main/java/com/controlprestamos/app/LoanDetailScreen.kt` | 4 | 6 | 12 | 10 |
+| 455 | `app/src/main/java/com/controlprestamos/app/LoanCollectionNoticeScreen.kt` | 3 | 12 | 4 | 8 |
+| 420 | `app/src/main/java/com/controlprestamos/app/RestoreBackupScreen.kt` | 1 | 12 | 4 | 5 |
+| 398 | `app/src/main/java/com/controlprestamos/app/FrequentUsersScreen.kt` | 1 | 6 | 6 | 5 |
+| 363 | `app/src/main/java/com/controlprestamos/app/EditLoanScreen.kt` | 1 | 4 | 6 | 8 |
+| 338 | `app/src/main/java/com/controlprestamos/app/NewLoanScreen.kt` | 1 | 4 | 4 | 7 |
+| 338 | `app/src/main/java/com/controlprestamos/app/DashboardScreen.kt` | 2 | 9 | 4 | 0 |
+| 312 | `app/src/main/java/com/controlprestamos/app/BlacklistScreen.kt` | 1 | 5 | 6 | 0 |
+| 307 | `app/src/main/java/com/controlprestamos/app/WeeklyViewScreen.kt` | 3 | 3 | 10 | 11 |
+| 296 | `app/src/main/java/com/controlprestamos/app/MonthlyViewScreen.kt` | 3 | 3 | 10 | 11 |
+| 283 | `app/src/main/java/com/controlprestamos/app/MoreScreen.kt` | 6 | 4 | 5 | 19 |
+| 280 | `app/src/main/java/com/controlprestamos/app/GlobalSearchScreen.kt` | 1 | 5 | 8 | 7 |
+| 273 | `app/src/main/java/com/controlprestamos/app/DailySummaryScreen.kt` | 4 | 7 | 6 | 7 |
+| 271 | `app/src/main/java/com/controlprestamos/app/CollectionAgendaScreen.kt` | 3 | 3 | 11 | 13 |
+| 271 | `app/src/main/java/com/controlprestamos/app/TrashScreen.kt` | 3 | 7 | 7 | 5 |
+| 261 | `app/src/main/java/com/controlprestamos/app/ReminderSettingsScreen.kt` | 1 | 2 | 0 | 5 |
+| 255 | `app/src/main/java/com/controlprestamos/app/HistoryScreen.kt` | 3 | 4 | 8 | 0 |
+| 227 | `app/src/main/java/com/controlprestamos/app/EditProfileScreen.kt` | 1 | 1 | 4 | 6 |
+| 224 | `app/src/main/java/com/controlprestamos/app/LockScreen.kt` | 1 | 1 | 19 | 0 |
+| 218 | `app/src/main/java/com/controlprestamos/app/ReportsScreen.kt` | 2 | 2 | 5 | 5 |
+| 188 | `app/src/main/java/com/controlprestamos/app/ProfileScreen.kt` | 2 | 2 | 3 | 6 |
+| 176 | `app/src/main/java/com/controlprestamos/app/SecuritySettingsScreen.kt` | 1 | 1 | 18 | 5 |
+| 109 | `app/src/main/java/com/controlprestamos/app/PrivacyPolicyScreen.kt` | 1 | 1 | 0 | 5 |
 
 ## Store / Data Files
 
 | Lines | File | Functions | Classes | Objects |
 |---:|---|---:|---:|---:|
-| 421 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionBackupTrashStore.kt; Name=SessionBackupTrashStore.kt; Package=com.controlprestamos.app; Lines=421; Severity=HIGH; Category=data-store; FeatureGuess=backup-trash; Composables=0; Functions=14; Classes=1; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | 14 | 1 | 0 |
-| 354 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionLoanStore.kt; Name=SessionLoanStore.kt; Package=com.controlprestamos.app; Lines=354; Severity=HIGH; Category=data-store; FeatureGuess=loans; Composables=0; Functions=22; Classes=1; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | 22 | 1 | 0 |
-| 314 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionStore.kt; Name=SessionStore.kt; Package=com.controlprestamos.app; Lines=314; Severity=MEDIUM; Category=data-store; FeatureGuess=uncategorized; Composables=0; Functions=68; Classes=9; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=1}.File) | 68 | 9 | 0 |
-| 260 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionCatalogStore.kt; Name=SessionCatalogStore.kt; Package=com.controlprestamos.app; Lines=260; Severity=MEDIUM; Category=data-store; FeatureGuess=uncategorized; Composables=0; Functions=16; Classes=1; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | 16 | 1 | 0 |
-| 183 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionProfileHistoryStore.kt; Name=SessionProfileHistoryStore.kt; Package=com.controlprestamos.app; Lines=183; Severity=OK; Category=data-store; FeatureGuess=loans; Composables=0; Functions=11; Classes=1; Objects=0; Imports=7; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | 11 | 1 | 0 |
-| 124 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionSecurityStore.kt; Name=SessionSecurityStore.kt; Package=com.controlprestamos.app; Lines=124; Severity=OK; Category=data-store; FeatureGuess=security-reminders; Composables=0; Functions=14; Classes=1; Objects=0; Imports=4; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | 14 | 1 | 0 |
+| 421 | `app/src/main/java/com/controlprestamos/app/SessionBackupTrashStore.kt` | 14 | 1 | 0 |
+| 354 | `app/src/main/java/com/controlprestamos/app/SessionLoanStore.kt` | 22 | 1 | 0 |
+| 314 | `app/src/main/java/com/controlprestamos/app/SessionStore.kt` | 68 | 9 | 0 |
+| 260 | `app/src/main/java/com/controlprestamos/app/SessionCatalogStore.kt` | 16 | 1 | 0 |
+| 183 | `app/src/main/java/com/controlprestamos/app/SessionProfileHistoryStore.kt` | 11 | 1 | 0 |
+| 124 | `app/src/main/java/com/controlprestamos/app/SessionSecurityStore.kt` | 14 | 1 | 0 |
 
 ## Files Coupled to Navigation
 
 | Nav Mentions | File | Category |
 |---:|---|---|
-| 52 | $(@{File=app/src/main/java/com/controlprestamos/app/NavGraph.kt; Name=NavGraph.kt; Package=com.controlprestamos.app; Lines=268; Severity=MEDIUM; Category=navigation; FeatureGuess=navigation; Composables=1; Functions=3; Classes=0; Objects=0; Imports=10; Todos=0; NavMentions=52; SessionStoreMentions=57}.File) | navigation |
-| 19 | $(@{File=app/src/main/java/com/controlprestamos/app/MoreScreen.kt; Name=MoreScreen.kt; Package=com.controlprestamos.app; Lines=283; Severity=MEDIUM; Category=ui-screen; FeatureGuess=uncategorized; Composables=6; Functions=4; Classes=0; Objects=0; Imports=27; Todos=0; NavMentions=19; SessionStoreMentions=5}.File) | ui-screen |
-| 13 | $(@{File=app/src/main/java/com/controlprestamos/app/CollectionAgendaScreen.kt; Name=CollectionAgendaScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=13; SessionStoreMentions=11}.File) | ui-screen |
-| 11 | $(@{File=app/src/main/java/com/controlprestamos/app/MonthlyViewScreen.kt; Name=MonthlyViewScreen.kt; Package=com.controlprestamos.app; Lines=296; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=22; Todos=0; NavMentions=11; SessionStoreMentions=10}.File) | ui-screen |
-| 11 | $(@{File=app/src/main/java/com/controlprestamos/app/WeeklyViewScreen.kt; Name=WeeklyViewScreen.kt; Package=com.controlprestamos.app; Lines=307; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=26; Todos=0; NavMentions=11; SessionStoreMentions=10}.File) | ui-screen |
-| 10 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanDetailScreen.kt; Name=LoanDetailScreen.kt; Package=com.controlprestamos.app; Lines=467; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=6; Classes=0; Objects=0; Imports=31; Todos=0; NavMentions=10; SessionStoreMentions=12}.File) | ui-screen |
-| 10 | $(@{File=app/src/main/java/com/controlprestamos/app/AppDesign.kt; Name=AppDesign.kt; Package=com.controlprestamos.app; Lines=461; Severity=HIGH; Category=ui-core; FeatureGuess=core-ui; Composables=16; Functions=15; Classes=0; Objects=2; Imports=41; Todos=0; NavMentions=10; SessionStoreMentions=0}.File) | ui-core |
-| 8 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanCollectionNoticeScreen.kt; Name=LoanCollectionNoticeScreen.kt; Package=com.controlprestamos.app; Lines=455; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=12; Classes=0; Objects=0; Imports=28; Todos=0; NavMentions=8; SessionStoreMentions=4}.File) | ui-screen |
-| 8 | $(@{File=app/src/main/java/com/controlprestamos/app/EditLoanScreen.kt; Name=EditLoanScreen.kt; Package=com.controlprestamos.app; Lines=363; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=1; Functions=4; Classes=0; Objects=0; Imports=18; Todos=0; NavMentions=8; SessionStoreMentions=6}.File) | ui-screen |
-| 7 | $(@{File=app/src/main/java/com/controlprestamos/app/GlobalSearchScreen.kt; Name=GlobalSearchScreen.kt; Package=com.controlprestamos.app; Lines=280; Severity=MEDIUM; Category=ui-screen; FeatureGuess=search; Composables=1; Functions=5; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=7; SessionStoreMentions=8}.File) | ui-screen |
-| 7 | $(@{File=app/src/main/java/com/controlprestamos/app/DailySummaryScreen.kt; Name=DailySummaryScreen.kt; Package=com.controlprestamos.app; Lines=273; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=7; Classes=0; Objects=0; Imports=23; Todos=0; NavMentions=7; SessionStoreMentions=6}.File) | ui-screen |
-| 7 | $(@{File=app/src/main/java/com/controlprestamos/app/NewLoanScreen.kt; Name=NewLoanScreen.kt; Package=com.controlprestamos.app; Lines=338; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=1; Functions=4; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=7; SessionStoreMentions=4}.File) | ui-screen |
-| 6 | $(@{File=app/src/main/java/com/controlprestamos/app/ProfileScreen.kt; Name=ProfileScreen.kt; Package=com.controlprestamos.app; Lines=188; Severity=OK; Category=ui-screen; FeatureGuess=clients-profile; Composables=2; Functions=2; Classes=0; Objects=0; Imports=22; Todos=0; NavMentions=6; SessionStoreMentions=3}.File) | ui-screen |
-| 6 | $(@{File=app/src/main/java/com/controlprestamos/app/LoansScreen.kt; Name=LoansScreen.kt; Package=com.controlprestamos.app; Lines=574; Severity=CRITICAL; Category=ui-screen; FeatureGuess=loans; Composables=6; Functions=19; Classes=0; Objects=0; Imports=49; Todos=5; NavMentions=6; SessionStoreMentions=9}.File) | ui-screen |
-| 6 | $(@{File=app/src/main/java/com/controlprestamos/app/EditProfileScreen.kt; Name=EditProfileScreen.kt; Package=com.controlprestamos.app; Lines=227; Severity=OK; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=1; Classes=0; Objects=0; Imports=14; Todos=0; NavMentions=6; SessionStoreMentions=4}.File) | ui-screen |
-| 5 | $(@{File=app/src/main/java/com/controlprestamos/app/SecuritySettingsScreen.kt; Name=SecuritySettingsScreen.kt; Package=com.controlprestamos.app; Lines=176; Severity=OK; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=1; Classes=0; Objects=0; Imports=24; Todos=0; NavMentions=5; SessionStoreMentions=18}.File) | ui-screen |
-| 5 | $(@{File=app/src/main/java/com/controlprestamos/app/TrashScreen.kt; Name=TrashScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=backup-trash; Composables=3; Functions=7; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=5; SessionStoreMentions=7}.File) | ui-screen |
-| 5 | $(@{File=app/src/main/java/com/controlprestamos/MainActivity.kt; Name=MainActivity.kt; Package=com.controlprestamos; Lines=62; Severity=OK; Category=app-entry; FeatureGuess=app; Composables=0; Functions=0; Classes=1; Objects=0; Imports=9; Todos=0; NavMentions=5; SessionStoreMentions=9}.File) | app-entry |
-| 5 | $(@{File=app/src/main/java/com/controlprestamos/app/BackupExportScreen.kt; Name=BackupExportScreen.kt; Package=com.controlprestamos.app; Lines=473; Severity=HIGH; Category=ui-screen; FeatureGuess=backup-trash; Composables=2; Functions=15; Classes=0; Objects=0; Imports=30; Todos=0; NavMentions=5; SessionStoreMentions=20}.File) | ui-screen |
-| 5 | $(@{File=app/src/main/java/com/controlprestamos/app/RestoreBackupScreen.kt; Name=RestoreBackupScreen.kt; Package=com.controlprestamos.app; Lines=420; Severity=HIGH; Category=ui-screen; FeatureGuess=backup-trash; Composables=1; Functions=12; Classes=0; Objects=0; Imports=25; Todos=0; NavMentions=5; SessionStoreMentions=4}.File) | ui-screen |
-| 5 | $(@{File=app/src/main/java/com/controlprestamos/app/PrivacyPolicyScreen.kt; Name=PrivacyPolicyScreen.kt; Package=com.controlprestamos.app; Lines=109; Severity=OK; Category=ui-screen; FeatureGuess=uncategorized; Composables=1; Functions=1; Classes=0; Objects=0; Imports=14; Todos=0; NavMentions=5; SessionStoreMentions=0}.File) | ui-screen |
-| 5 | $(@{File=app/src/main/java/com/controlprestamos/app/FrequentUsersScreen.kt; Name=FrequentUsersScreen.kt; Package=com.controlprestamos.app; Lines=398; Severity=HIGH; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=6; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=5; SessionStoreMentions=6}.File) | ui-screen |
-| 5 | $(@{File=app/src/main/java/com/controlprestamos/app/ReportsScreen.kt; Name=ReportsScreen.kt; Package=com.controlprestamos.app; Lines=218; Severity=OK; Category=ui-screen; FeatureGuess=analytics-dashboard; Composables=2; Functions=2; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=5; SessionStoreMentions=5}.File) | ui-screen |
-| 5 | $(@{File=app/src/main/java/com/controlprestamos/app/ReminderSettingsScreen.kt; Name=ReminderSettingsScreen.kt; Package=com.controlprestamos.app; Lines=261; Severity=MEDIUM; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=2; Classes=0; Objects=0; Imports=29; Todos=0; NavMentions=5; SessionStoreMentions=0}.File) | ui-screen |
+| 52 | `app/src/main/java/com/controlprestamos/app/NavGraph.kt` | navigation |
+| 19 | `app/src/main/java/com/controlprestamos/app/MoreScreen.kt` | ui-screen |
+| 13 | `app/src/main/java/com/controlprestamos/app/CollectionAgendaScreen.kt` | ui-screen |
+| 11 | `app/src/main/java/com/controlprestamos/app/MonthlyViewScreen.kt` | ui-screen |
+| 11 | `app/src/main/java/com/controlprestamos/app/WeeklyViewScreen.kt` | ui-screen |
+| 10 | `app/src/main/java/com/controlprestamos/app/LoanDetailScreen.kt` | ui-screen |
+| 10 | `app/src/main/java/com/controlprestamos/app/AppDesign.kt` | ui-core |
+| 8 | `app/src/main/java/com/controlprestamos/app/LoanCollectionNoticeScreen.kt` | ui-screen |
+| 8 | `app/src/main/java/com/controlprestamos/app/EditLoanScreen.kt` | ui-screen |
+| 7 | `app/src/main/java/com/controlprestamos/app/GlobalSearchScreen.kt` | ui-screen |
+| 7 | `app/src/main/java/com/controlprestamos/app/DailySummaryScreen.kt` | ui-screen |
+| 7 | `app/src/main/java/com/controlprestamos/app/NewLoanScreen.kt` | ui-screen |
+| 6 | `app/src/main/java/com/controlprestamos/app/ProfileScreen.kt` | ui-screen |
+| 6 | `app/src/main/java/com/controlprestamos/app/LoansScreen.kt` | ui-screen |
+| 6 | `app/src/main/java/com/controlprestamos/app/EditProfileScreen.kt` | ui-screen |
+| 5 | `app/src/main/java/com/controlprestamos/app/SecuritySettingsScreen.kt` | ui-screen |
+| 5 | `app/src/main/java/com/controlprestamos/app/TrashScreen.kt` | ui-screen |
+| 5 | `app/src/main/java/com/controlprestamos/MainActivity.kt` | app-entry |
+| 5 | `app/src/main/java/com/controlprestamos/app/BackupExportScreen.kt` | ui-screen |
+| 5 | `app/src/main/java/com/controlprestamos/app/RestoreBackupScreen.kt` | ui-screen |
+| 5 | `app/src/main/java/com/controlprestamos/app/PrivacyPolicyScreen.kt` | ui-screen |
+| 5 | `app/src/main/java/com/controlprestamos/app/FrequentUsersScreen.kt` | ui-screen |
+| 5 | `app/src/main/java/com/controlprestamos/app/ReportsScreen.kt` | ui-screen |
+| 5 | `app/src/main/java/com/controlprestamos/app/ReminderSettingsScreen.kt` | ui-screen |
 
 ## Files Heavily Coupled to SessionStore
 
 | SessionStore Mentions | File | Category | Feature Guess |
 |---:|---|---|---|
-| 57 | $(@{File=app/src/main/java/com/controlprestamos/app/NavGraph.kt; Name=NavGraph.kt; Package=com.controlprestamos.app; Lines=268; Severity=MEDIUM; Category=navigation; FeatureGuess=navigation; Composables=1; Functions=3; Classes=0; Objects=0; Imports=10; Todos=0; NavMentions=52; SessionStoreMentions=57}.File) | navigation | navigation |
-| 20 | $(@{File=app/src/main/java/com/controlprestamos/app/BackupExportScreen.kt; Name=BackupExportScreen.kt; Package=com.controlprestamos.app; Lines=473; Severity=HIGH; Category=ui-screen; FeatureGuess=backup-trash; Composables=2; Functions=15; Classes=0; Objects=0; Imports=30; Todos=0; NavMentions=5; SessionStoreMentions=20}.File) | ui-screen | backup-trash |
-| 19 | $(@{File=app/src/main/java/com/controlprestamos/app/LockScreen.kt; Name=LockScreen.kt; Package=com.controlprestamos.app; Lines=224; Severity=OK; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=1; Classes=0; Objects=1; Imports=26; Todos=0; NavMentions=0; SessionStoreMentions=19}.File) | ui-screen | security-reminders |
-| 18 | $(@{File=app/src/main/java/com/controlprestamos/app/SecuritySettingsScreen.kt; Name=SecuritySettingsScreen.kt; Package=com.controlprestamos.app; Lines=176; Severity=OK; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=1; Classes=0; Objects=0; Imports=24; Todos=0; NavMentions=5; SessionStoreMentions=18}.File) | ui-screen | security-reminders |
-| 12 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanDetailScreen.kt; Name=LoanDetailScreen.kt; Package=com.controlprestamos.app; Lines=467; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=6; Classes=0; Objects=0; Imports=31; Todos=0; NavMentions=10; SessionStoreMentions=12}.File) | ui-screen | loans |
-| 11 | $(@{File=app/src/main/java/com/controlprestamos/app/CollectionAgendaScreen.kt; Name=CollectionAgendaScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=13; SessionStoreMentions=11}.File) | ui-screen | loans |
-| 10 | $(@{File=app/src/main/java/com/controlprestamos/app/WeeklyViewScreen.kt; Name=WeeklyViewScreen.kt; Package=com.controlprestamos.app; Lines=307; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=26; Todos=0; NavMentions=11; SessionStoreMentions=10}.File) | ui-screen | loans |
-| 10 | $(@{File=app/src/main/java/com/controlprestamos/app/MonthlyViewScreen.kt; Name=MonthlyViewScreen.kt; Package=com.controlprestamos.app; Lines=296; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=22; Todos=0; NavMentions=11; SessionStoreMentions=10}.File) | ui-screen | loans |
-| 9 | $(@{File=app/src/main/java/com/controlprestamos/MainActivity.kt; Name=MainActivity.kt; Package=com.controlprestamos; Lines=62; Severity=OK; Category=app-entry; FeatureGuess=app; Composables=0; Functions=0; Classes=1; Objects=0; Imports=9; Todos=0; NavMentions=5; SessionStoreMentions=9}.File) | app-entry | app |
-| 9 | $(@{File=app/src/main/java/com/controlprestamos/app/LoansScreen.kt; Name=LoansScreen.kt; Package=com.controlprestamos.app; Lines=574; Severity=CRITICAL; Category=ui-screen; FeatureGuess=loans; Composables=6; Functions=19; Classes=0; Objects=0; Imports=49; Todos=5; NavMentions=6; SessionStoreMentions=9}.File) | ui-screen | loans |
-| 8 | $(@{File=app/src/main/java/com/controlprestamos/app/HistoryScreen.kt; Name=HistoryScreen.kt; Package=com.controlprestamos.app; Lines=255; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=4; Classes=0; Objects=0; Imports=20; Todos=1; NavMentions=0; SessionStoreMentions=8}.File) | ui-screen | loans |
-| 8 | $(@{File=app/src/main/java/com/controlprestamos/app/GlobalSearchScreen.kt; Name=GlobalSearchScreen.kt; Package=com.controlprestamos.app; Lines=280; Severity=MEDIUM; Category=ui-screen; FeatureGuess=search; Composables=1; Functions=5; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=7; SessionStoreMentions=8}.File) | ui-screen | search |
-| 7 | $(@{File=app/src/main/java/com/controlprestamos/app/TrashScreen.kt; Name=TrashScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=backup-trash; Composables=3; Functions=7; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=5; SessionStoreMentions=7}.File) | ui-screen | backup-trash |
-| 6 | $(@{File=app/src/main/java/com/controlprestamos/app/FrequentUsersScreen.kt; Name=FrequentUsersScreen.kt; Package=com.controlprestamos.app; Lines=398; Severity=HIGH; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=6; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=5; SessionStoreMentions=6}.File) | ui-screen | clients-profile |
-| 6 | $(@{File=app/src/main/java/com/controlprestamos/app/BlacklistScreen.kt; Name=BlacklistScreen.kt; Package=com.controlprestamos.app; Lines=312; Severity=MEDIUM; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=5; Classes=0; Objects=0; Imports=18; Todos=0; NavMentions=0; SessionStoreMentions=6}.File) | ui-screen | clients-profile |
-| 6 | $(@{File=app/src/main/java/com/controlprestamos/app/DailySummaryScreen.kt; Name=DailySummaryScreen.kt; Package=com.controlprestamos.app; Lines=273; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=7; Classes=0; Objects=0; Imports=23; Todos=0; NavMentions=7; SessionStoreMentions=6}.File) | ui-screen | loans |
-| 6 | $(@{File=app/src/main/java/com/controlprestamos/app/EditLoanScreen.kt; Name=EditLoanScreen.kt; Package=com.controlprestamos.app; Lines=363; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=1; Functions=4; Classes=0; Objects=0; Imports=18; Todos=0; NavMentions=8; SessionStoreMentions=6}.File) | ui-screen | loans |
-| 6 | $(@{File=app/src/main/java/com/controlprestamos/app/ReferralsScreen.kt; Name=ReferralsScreen.kt; Package=com.controlprestamos.app; Lines=545; Severity=CRITICAL; Category=ui-screen; FeatureGuess=clients-profile; Composables=4; Functions=10; Classes=0; Objects=0; Imports=27; Todos=6; NavMentions=0; SessionStoreMentions=6}.File) | ui-screen | clients-profile |
+| 57 | `app/src/main/java/com/controlprestamos/app/NavGraph.kt` | navigation | navigation |
+| 20 | `app/src/main/java/com/controlprestamos/app/BackupExportScreen.kt` | ui-screen | backup-trash |
+| 19 | `app/src/main/java/com/controlprestamos/app/LockScreen.kt` | ui-screen | security-reminders |
+| 18 | `app/src/main/java/com/controlprestamos/app/SecuritySettingsScreen.kt` | ui-screen | security-reminders |
+| 12 | `app/src/main/java/com/controlprestamos/app/LoanDetailScreen.kt` | ui-screen | loans |
+| 11 | `app/src/main/java/com/controlprestamos/app/CollectionAgendaScreen.kt` | ui-screen | loans |
+| 10 | `app/src/main/java/com/controlprestamos/app/WeeklyViewScreen.kt` | ui-screen | loans |
+| 10 | `app/src/main/java/com/controlprestamos/app/MonthlyViewScreen.kt` | ui-screen | loans |
+| 9 | `app/src/main/java/com/controlprestamos/MainActivity.kt` | app-entry | app |
+| 9 | `app/src/main/java/com/controlprestamos/app/LoansScreen.kt` | ui-screen | loans |
+| 8 | `app/src/main/java/com/controlprestamos/app/HistoryScreen.kt` | ui-screen | loans |
+| 8 | `app/src/main/java/com/controlprestamos/app/GlobalSearchScreen.kt` | ui-screen | search |
+| 7 | `app/src/main/java/com/controlprestamos/app/TrashScreen.kt` | ui-screen | backup-trash |
+| 6 | `app/src/main/java/com/controlprestamos/app/FrequentUsersScreen.kt` | ui-screen | clients-profile |
+| 6 | `app/src/main/java/com/controlprestamos/app/BlacklistScreen.kt` | ui-screen | clients-profile |
+| 6 | `app/src/main/java/com/controlprestamos/app/DailySummaryScreen.kt` | ui-screen | loans |
+| 6 | `app/src/main/java/com/controlprestamos/app/EditLoanScreen.kt` | ui-screen | loans |
+| 6 | `app/src/main/java/com/controlprestamos/app/ReferralsScreen.kt` | ui-screen | clients-profile |
 
 ## TODO / FIXME / HACK Markers
 
 | Markers | File |
 |---:|---|
-| 6 | $(@{File=app/src/main/java/com/controlprestamos/app/ReferralsScreen.kt; Name=ReferralsScreen.kt; Package=com.controlprestamos.app; Lines=545; Severity=CRITICAL; Category=ui-screen; FeatureGuess=clients-profile; Composables=4; Functions=10; Classes=0; Objects=0; Imports=27; Todos=6; NavMentions=0; SessionStoreMentions=6}.File) |
-| 5 | $(@{File=app/src/main/java/com/controlprestamos/app/LoansScreen.kt; Name=LoansScreen.kt; Package=com.controlprestamos.app; Lines=574; Severity=CRITICAL; Category=ui-screen; FeatureGuess=loans; Composables=6; Functions=19; Classes=0; Objects=0; Imports=49; Todos=5; NavMentions=6; SessionStoreMentions=9}.File) |
-| 1 | $(@{File=app/src/main/java/com/controlprestamos/app/HistoryScreen.kt; Name=HistoryScreen.kt; Package=com.controlprestamos.app; Lines=255; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=4; Classes=0; Objects=0; Imports=20; Todos=1; NavMentions=0; SessionStoreMentions=8}.File) |
+| 6 | `app/src/main/java/com/controlprestamos/app/ReferralsScreen.kt` |
+| 5 | `app/src/main/java/com/controlprestamos/app/LoansScreen.kt` |
+| 1 | `app/src/main/java/com/controlprestamos/app/HistoryScreen.kt` |
 
 ## Recommended Target Architecture
 
@@ -186,29 +186,29 @@ Suggested long-term structure:
 
 ```text
 com.controlprestamos
-├── LoanApp.kt
-├── MainActivity.kt
-├── core
-│   ├── design
-│   ├── formatting
-│   ├── navigation
-│   └── permissions
-├── data
-│   ├── local
-│   ├── repository
-│   └── backup
-├── domain
-│   ├── model
-│   └── usecase
-└── features
-    ├── dashboard
-    ├── loans
-    ├── clients
-    ├── reports
-    ├── backup
-    ├── security
-    ├── reminders
-    └── search
+|-- LoanApp.kt
+|-- MainActivity.kt
+|-- core
+|   |-- design
+|   |-- formatting
+|   |-- navigation
+|   |-- permissions
+|-- data
+|   |-- local
+|   |-- repository
+|   |-- backup
+|-- domain
+|   |-- model
+|   |-- usecase
+|-- features
+    |-- dashboard
+    |-- loans
+    |-- clients
+    |-- reports
+    |-- backup
+    |-- security
+    |-- reminders
+    |-- search
 ```
 
 ## Refactor Plan
@@ -252,45 +252,45 @@ This is low risk because it changes package organization, not behavior.
 
 | Lines | File | Package | Category | Feature Guess | Composables | Functions | Classes | Objects |
 |---:|---|---|---|---|---:|---:|---:|---:|
-| 461 | $(@{File=app/src/main/java/com/controlprestamos/app/AppDesign.kt; Name=AppDesign.kt; Package=com.controlprestamos.app; Lines=461; Severity=HIGH; Category=ui-core; FeatureGuess=core-ui; Composables=16; Functions=15; Classes=0; Objects=2; Imports=41; Todos=0; NavMentions=10; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/AppDesign.kt; Name=AppDesign.kt; Package=com.controlprestamos.app; Lines=461; Severity=HIGH; Category=ui-core; FeatureGuess=core-ui; Composables=16; Functions=15; Classes=0; Objects=2; Imports=41; Todos=0; NavMentions=10; SessionStoreMentions=0}.Package) | ui-core | core-ui | 16 | 15 | 0 | 2 |
-| 416 | $(@{File=app/src/main/java/com/controlprestamos/app/AppFields.kt; Name=AppFields.kt; Package=com.controlprestamos.app; Lines=416; Severity=HIGH; Category=ui-core; FeatureGuess=core-ui; Composables=1; Functions=28; Classes=0; Objects=0; Imports=17; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/AppFields.kt; Name=AppFields.kt; Package=com.controlprestamos.app; Lines=416; Severity=HIGH; Category=ui-core; FeatureGuess=core-ui; Composables=1; Functions=28; Classes=0; Objects=0; Imports=17; Todos=0; NavMentions=0; SessionStoreMentions=0}.Package) | ui-core | core-ui | 1 | 28 | 0 | 0 |
-| 102 | $(@{File=app/src/main/java/com/controlprestamos/app/AppRoutes.kt; Name=AppRoutes.kt; Package=com.controlprestamos.app; Lines=102; Severity=OK; Category=navigation; FeatureGuess=navigation; Composables=0; Functions=0; Classes=0; Objects=1; Imports=0; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/AppRoutes.kt; Name=AppRoutes.kt; Package=com.controlprestamos.app; Lines=102; Severity=OK; Category=navigation; FeatureGuess=navigation; Composables=0; Functions=0; Classes=0; Objects=1; Imports=0; Todos=0; NavMentions=0; SessionStoreMentions=0}.Package) | navigation | navigation | 0 | 0 | 0 | 1 |
-| 473 | $(@{File=app/src/main/java/com/controlprestamos/app/BackupExportScreen.kt; Name=BackupExportScreen.kt; Package=com.controlprestamos.app; Lines=473; Severity=HIGH; Category=ui-screen; FeatureGuess=backup-trash; Composables=2; Functions=15; Classes=0; Objects=0; Imports=30; Todos=0; NavMentions=5; SessionStoreMentions=20}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/BackupExportScreen.kt; Name=BackupExportScreen.kt; Package=com.controlprestamos.app; Lines=473; Severity=HIGH; Category=ui-screen; FeatureGuess=backup-trash; Composables=2; Functions=15; Classes=0; Objects=0; Imports=30; Todos=0; NavMentions=5; SessionStoreMentions=20}.Package) | ui-screen | backup-trash | 2 | 15 | 0 | 0 |
-| 312 | $(@{File=app/src/main/java/com/controlprestamos/app/BlacklistScreen.kt; Name=BlacklistScreen.kt; Package=com.controlprestamos.app; Lines=312; Severity=MEDIUM; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=5; Classes=0; Objects=0; Imports=18; Todos=0; NavMentions=0; SessionStoreMentions=6}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/BlacklistScreen.kt; Name=BlacklistScreen.kt; Package=com.controlprestamos.app; Lines=312; Severity=MEDIUM; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=5; Classes=0; Objects=0; Imports=18; Todos=0; NavMentions=0; SessionStoreMentions=6}.Package) | ui-screen | clients-profile | 1 | 5 | 0 | 0 |
-| 271 | $(@{File=app/src/main/java/com/controlprestamos/app/CollectionAgendaScreen.kt; Name=CollectionAgendaScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=13; SessionStoreMentions=11}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/CollectionAgendaScreen.kt; Name=CollectionAgendaScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=13; SessionStoreMentions=11}.Package) | ui-screen | loans | 3 | 3 | 0 | 0 |
-| 273 | $(@{File=app/src/main/java/com/controlprestamos/app/DailySummaryScreen.kt; Name=DailySummaryScreen.kt; Package=com.controlprestamos.app; Lines=273; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=7; Classes=0; Objects=0; Imports=23; Todos=0; NavMentions=7; SessionStoreMentions=6}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/DailySummaryScreen.kt; Name=DailySummaryScreen.kt; Package=com.controlprestamos.app; Lines=273; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=7; Classes=0; Objects=0; Imports=23; Todos=0; NavMentions=7; SessionStoreMentions=6}.Package) | ui-screen | loans | 4 | 7 | 0 | 0 |
-| 338 | $(@{File=app/src/main/java/com/controlprestamos/app/DashboardScreen.kt; Name=DashboardScreen.kt; Package=com.controlprestamos.app; Lines=338; Severity=MEDIUM; Category=ui-screen; FeatureGuess=analytics-dashboard; Composables=2; Functions=9; Classes=0; Objects=0; Imports=20; Todos=0; NavMentions=0; SessionStoreMentions=4}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/DashboardScreen.kt; Name=DashboardScreen.kt; Package=com.controlprestamos.app; Lines=338; Severity=MEDIUM; Category=ui-screen; FeatureGuess=analytics-dashboard; Composables=2; Functions=9; Classes=0; Objects=0; Imports=20; Todos=0; NavMentions=0; SessionStoreMentions=4}.Package) | ui-screen | analytics-dashboard | 2 | 9 | 0 | 0 |
-| 363 | $(@{File=app/src/main/java/com/controlprestamos/app/EditLoanScreen.kt; Name=EditLoanScreen.kt; Package=com.controlprestamos.app; Lines=363; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=1; Functions=4; Classes=0; Objects=0; Imports=18; Todos=0; NavMentions=8; SessionStoreMentions=6}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/EditLoanScreen.kt; Name=EditLoanScreen.kt; Package=com.controlprestamos.app; Lines=363; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=1; Functions=4; Classes=0; Objects=0; Imports=18; Todos=0; NavMentions=8; SessionStoreMentions=6}.Package) | ui-screen | loans | 1 | 4 | 0 | 0 |
-| 227 | $(@{File=app/src/main/java/com/controlprestamos/app/EditProfileScreen.kt; Name=EditProfileScreen.kt; Package=com.controlprestamos.app; Lines=227; Severity=OK; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=1; Classes=0; Objects=0; Imports=14; Todos=0; NavMentions=6; SessionStoreMentions=4}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/EditProfileScreen.kt; Name=EditProfileScreen.kt; Package=com.controlprestamos.app; Lines=227; Severity=OK; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=1; Classes=0; Objects=0; Imports=14; Todos=0; NavMentions=6; SessionStoreMentions=4}.Package) | ui-screen | clients-profile | 1 | 1 | 0 | 0 |
-| 398 | $(@{File=app/src/main/java/com/controlprestamos/app/FrequentUsersScreen.kt; Name=FrequentUsersScreen.kt; Package=com.controlprestamos.app; Lines=398; Severity=HIGH; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=6; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=5; SessionStoreMentions=6}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/FrequentUsersScreen.kt; Name=FrequentUsersScreen.kt; Package=com.controlprestamos.app; Lines=398; Severity=HIGH; Category=ui-screen; FeatureGuess=clients-profile; Composables=1; Functions=6; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=5; SessionStoreMentions=6}.Package) | ui-screen | clients-profile | 1 | 6 | 0 | 0 |
-| 280 | $(@{File=app/src/main/java/com/controlprestamos/app/GlobalSearchScreen.kt; Name=GlobalSearchScreen.kt; Package=com.controlprestamos.app; Lines=280; Severity=MEDIUM; Category=ui-screen; FeatureGuess=search; Composables=1; Functions=5; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=7; SessionStoreMentions=8}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/GlobalSearchScreen.kt; Name=GlobalSearchScreen.kt; Package=com.controlprestamos.app; Lines=280; Severity=MEDIUM; Category=ui-screen; FeatureGuess=search; Composables=1; Functions=5; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=7; SessionStoreMentions=8}.Package) | ui-screen | search | 1 | 5 | 0 | 0 |
-| 255 | $(@{File=app/src/main/java/com/controlprestamos/app/HistoryScreen.kt; Name=HistoryScreen.kt; Package=com.controlprestamos.app; Lines=255; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=4; Classes=0; Objects=0; Imports=20; Todos=1; NavMentions=0; SessionStoreMentions=8}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/HistoryScreen.kt; Name=HistoryScreen.kt; Package=com.controlprestamos.app; Lines=255; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=4; Classes=0; Objects=0; Imports=20; Todos=1; NavMentions=0; SessionStoreMentions=8}.Package) | ui-screen | loans | 3 | 4 | 0 | 0 |
-| 455 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanCollectionNoticeScreen.kt; Name=LoanCollectionNoticeScreen.kt; Package=com.controlprestamos.app; Lines=455; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=12; Classes=0; Objects=0; Imports=28; Todos=0; NavMentions=8; SessionStoreMentions=4}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/LoanCollectionNoticeScreen.kt; Name=LoanCollectionNoticeScreen.kt; Package=com.controlprestamos.app; Lines=455; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=12; Classes=0; Objects=0; Imports=28; Todos=0; NavMentions=8; SessionStoreMentions=4}.Package) | ui-screen | loans | 3 | 12 | 0 | 0 |
-| 467 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanDetailScreen.kt; Name=LoanDetailScreen.kt; Package=com.controlprestamos.app; Lines=467; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=6; Classes=0; Objects=0; Imports=31; Todos=0; NavMentions=10; SessionStoreMentions=12}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/LoanDetailScreen.kt; Name=LoanDetailScreen.kt; Package=com.controlprestamos.app; Lines=467; Severity=HIGH; Category=ui-screen; FeatureGuess=loans; Composables=4; Functions=6; Classes=0; Objects=0; Imports=31; Todos=0; NavMentions=10; SessionStoreMentions=12}.Package) | ui-screen | loans | 4 | 6 | 0 | 0 |
-| 17 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanReminderBootReceiver.kt; Name=LoanReminderBootReceiver.kt; Package=com.controlprestamos.app; Lines=17; Severity=OK; Category=android-receiver; FeatureGuess=loans; Composables=0; Functions=0; Classes=1; Objects=0; Imports=3; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/LoanReminderBootReceiver.kt; Name=LoanReminderBootReceiver.kt; Package=com.controlprestamos.app; Lines=17; Severity=OK; Category=android-receiver; FeatureGuess=loans; Composables=0; Functions=0; Classes=1; Objects=0; Imports=3; Todos=0; NavMentions=0; SessionStoreMentions=0}.Package) | android-receiver | loans | 0 | 0 | 1 | 0 |
-| 287 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanReminderManager.kt; Name=LoanReminderManager.kt; Package=com.controlprestamos.app; Lines=287; Severity=MEDIUM; Category=manager; FeatureGuess=loans; Composables=0; Functions=18; Classes=0; Objects=1; Imports=16; Todos=0; NavMentions=0; SessionStoreMentions=3}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/LoanReminderManager.kt; Name=LoanReminderManager.kt; Package=com.controlprestamos.app; Lines=287; Severity=MEDIUM; Category=manager; FeatureGuess=loans; Composables=0; Functions=18; Classes=0; Objects=1; Imports=16; Todos=0; NavMentions=0; SessionStoreMentions=3}.Package) | manager | loans | 0 | 18 | 0 | 1 |
-| 12 | $(@{File=app/src/main/java/com/controlprestamos/app/LoanReminderReceiver.kt; Name=LoanReminderReceiver.kt; Package=com.controlprestamos.app; Lines=12; Severity=OK; Category=android-receiver; FeatureGuess=loans; Composables=0; Functions=0; Classes=1; Objects=0; Imports=3; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/LoanReminderReceiver.kt; Name=LoanReminderReceiver.kt; Package=com.controlprestamos.app; Lines=12; Severity=OK; Category=android-receiver; FeatureGuess=loans; Composables=0; Functions=0; Classes=1; Objects=0; Imports=3; Todos=0; NavMentions=0; SessionStoreMentions=0}.Package) | android-receiver | loans | 0 | 0 | 1 | 0 |
-| 574 | $(@{File=app/src/main/java/com/controlprestamos/app/LoansScreen.kt; Name=LoansScreen.kt; Package=com.controlprestamos.app; Lines=574; Severity=CRITICAL; Category=ui-screen; FeatureGuess=loans; Composables=6; Functions=19; Classes=0; Objects=0; Imports=49; Todos=5; NavMentions=6; SessionStoreMentions=9}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/LoansScreen.kt; Name=LoansScreen.kt; Package=com.controlprestamos.app; Lines=574; Severity=CRITICAL; Category=ui-screen; FeatureGuess=loans; Composables=6; Functions=19; Classes=0; Objects=0; Imports=49; Todos=5; NavMentions=6; SessionStoreMentions=9}.Package) | ui-screen | loans | 6 | 19 | 0 | 0 |
-| 224 | $(@{File=app/src/main/java/com/controlprestamos/app/LockScreen.kt; Name=LockScreen.kt; Package=com.controlprestamos.app; Lines=224; Severity=OK; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=1; Classes=0; Objects=1; Imports=26; Todos=0; NavMentions=0; SessionStoreMentions=19}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/LockScreen.kt; Name=LockScreen.kt; Package=com.controlprestamos.app; Lines=224; Severity=OK; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=1; Classes=0; Objects=1; Imports=26; Todos=0; NavMentions=0; SessionStoreMentions=19}.Package) | ui-screen | security-reminders | 1 | 1 | 0 | 1 |
-| 296 | $(@{File=app/src/main/java/com/controlprestamos/app/MonthlyViewScreen.kt; Name=MonthlyViewScreen.kt; Package=com.controlprestamos.app; Lines=296; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=22; Todos=0; NavMentions=11; SessionStoreMentions=10}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/MonthlyViewScreen.kt; Name=MonthlyViewScreen.kt; Package=com.controlprestamos.app; Lines=296; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=22; Todos=0; NavMentions=11; SessionStoreMentions=10}.Package) | ui-screen | loans | 3 | 3 | 0 | 0 |
-| 283 | $(@{File=app/src/main/java/com/controlprestamos/app/MoreScreen.kt; Name=MoreScreen.kt; Package=com.controlprestamos.app; Lines=283; Severity=MEDIUM; Category=ui-screen; FeatureGuess=uncategorized; Composables=6; Functions=4; Classes=0; Objects=0; Imports=27; Todos=0; NavMentions=19; SessionStoreMentions=5}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/MoreScreen.kt; Name=MoreScreen.kt; Package=com.controlprestamos.app; Lines=283; Severity=MEDIUM; Category=ui-screen; FeatureGuess=uncategorized; Composables=6; Functions=4; Classes=0; Objects=0; Imports=27; Todos=0; NavMentions=19; SessionStoreMentions=5}.Package) | ui-screen | uncategorized | 6 | 4 | 0 | 0 |
-| 268 | $(@{File=app/src/main/java/com/controlprestamos/app/NavGraph.kt; Name=NavGraph.kt; Package=com.controlprestamos.app; Lines=268; Severity=MEDIUM; Category=navigation; FeatureGuess=navigation; Composables=1; Functions=3; Classes=0; Objects=0; Imports=10; Todos=0; NavMentions=52; SessionStoreMentions=57}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/NavGraph.kt; Name=NavGraph.kt; Package=com.controlprestamos.app; Lines=268; Severity=MEDIUM; Category=navigation; FeatureGuess=navigation; Composables=1; Functions=3; Classes=0; Objects=0; Imports=10; Todos=0; NavMentions=52; SessionStoreMentions=57}.Package) | navigation | navigation | 1 | 3 | 0 | 0 |
-| 338 | $(@{File=app/src/main/java/com/controlprestamos/app/NewLoanScreen.kt; Name=NewLoanScreen.kt; Package=com.controlprestamos.app; Lines=338; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=1; Functions=4; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=7; SessionStoreMentions=4}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/NewLoanScreen.kt; Name=NewLoanScreen.kt; Package=com.controlprestamos.app; Lines=338; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=1; Functions=4; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=7; SessionStoreMentions=4}.Package) | ui-screen | loans | 1 | 4 | 0 | 0 |
-| 109 | $(@{File=app/src/main/java/com/controlprestamos/app/PrivacyPolicyScreen.kt; Name=PrivacyPolicyScreen.kt; Package=com.controlprestamos.app; Lines=109; Severity=OK; Category=ui-screen; FeatureGuess=uncategorized; Composables=1; Functions=1; Classes=0; Objects=0; Imports=14; Todos=0; NavMentions=5; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/PrivacyPolicyScreen.kt; Name=PrivacyPolicyScreen.kt; Package=com.controlprestamos.app; Lines=109; Severity=OK; Category=ui-screen; FeatureGuess=uncategorized; Composables=1; Functions=1; Classes=0; Objects=0; Imports=14; Todos=0; NavMentions=5; SessionStoreMentions=0}.Package) | ui-screen | uncategorized | 1 | 1 | 0 | 0 |
-| 188 | $(@{File=app/src/main/java/com/controlprestamos/app/ProfileScreen.kt; Name=ProfileScreen.kt; Package=com.controlprestamos.app; Lines=188; Severity=OK; Category=ui-screen; FeatureGuess=clients-profile; Composables=2; Functions=2; Classes=0; Objects=0; Imports=22; Todos=0; NavMentions=6; SessionStoreMentions=3}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/ProfileScreen.kt; Name=ProfileScreen.kt; Package=com.controlprestamos.app; Lines=188; Severity=OK; Category=ui-screen; FeatureGuess=clients-profile; Composables=2; Functions=2; Classes=0; Objects=0; Imports=22; Todos=0; NavMentions=6; SessionStoreMentions=3}.Package) | ui-screen | clients-profile | 2 | 2 | 0 | 0 |
-| 545 | $(@{File=app/src/main/java/com/controlprestamos/app/ReferralsScreen.kt; Name=ReferralsScreen.kt; Package=com.controlprestamos.app; Lines=545; Severity=CRITICAL; Category=ui-screen; FeatureGuess=clients-profile; Composables=4; Functions=10; Classes=0; Objects=0; Imports=27; Todos=6; NavMentions=0; SessionStoreMentions=6}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/ReferralsScreen.kt; Name=ReferralsScreen.kt; Package=com.controlprestamos.app; Lines=545; Severity=CRITICAL; Category=ui-screen; FeatureGuess=clients-profile; Composables=4; Functions=10; Classes=0; Objects=0; Imports=27; Todos=6; NavMentions=0; SessionStoreMentions=6}.Package) | ui-screen | clients-profile | 4 | 10 | 0 | 0 |
-| 261 | $(@{File=app/src/main/java/com/controlprestamos/app/ReminderSettingsScreen.kt; Name=ReminderSettingsScreen.kt; Package=com.controlprestamos.app; Lines=261; Severity=MEDIUM; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=2; Classes=0; Objects=0; Imports=29; Todos=0; NavMentions=5; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/ReminderSettingsScreen.kt; Name=ReminderSettingsScreen.kt; Package=com.controlprestamos.app; Lines=261; Severity=MEDIUM; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=2; Classes=0; Objects=0; Imports=29; Todos=0; NavMentions=5; SessionStoreMentions=0}.Package) | ui-screen | security-reminders | 1 | 2 | 0 | 0 |
-| 218 | $(@{File=app/src/main/java/com/controlprestamos/app/ReportsScreen.kt; Name=ReportsScreen.kt; Package=com.controlprestamos.app; Lines=218; Severity=OK; Category=ui-screen; FeatureGuess=analytics-dashboard; Composables=2; Functions=2; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=5; SessionStoreMentions=5}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/ReportsScreen.kt; Name=ReportsScreen.kt; Package=com.controlprestamos.app; Lines=218; Severity=OK; Category=ui-screen; FeatureGuess=analytics-dashboard; Composables=2; Functions=2; Classes=0; Objects=0; Imports=19; Todos=0; NavMentions=5; SessionStoreMentions=5}.Package) | ui-screen | analytics-dashboard | 2 | 2 | 0 | 0 |
-| 420 | $(@{File=app/src/main/java/com/controlprestamos/app/RestoreBackupScreen.kt; Name=RestoreBackupScreen.kt; Package=com.controlprestamos.app; Lines=420; Severity=HIGH; Category=ui-screen; FeatureGuess=backup-trash; Composables=1; Functions=12; Classes=0; Objects=0; Imports=25; Todos=0; NavMentions=5; SessionStoreMentions=4}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/RestoreBackupScreen.kt; Name=RestoreBackupScreen.kt; Package=com.controlprestamos.app; Lines=420; Severity=HIGH; Category=ui-screen; FeatureGuess=backup-trash; Composables=1; Functions=12; Classes=0; Objects=0; Imports=25; Todos=0; NavMentions=5; SessionStoreMentions=4}.Package) | ui-screen | backup-trash | 1 | 12 | 0 | 0 |
-| 176 | $(@{File=app/src/main/java/com/controlprestamos/app/SecuritySettingsScreen.kt; Name=SecuritySettingsScreen.kt; Package=com.controlprestamos.app; Lines=176; Severity=OK; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=1; Classes=0; Objects=0; Imports=24; Todos=0; NavMentions=5; SessionStoreMentions=18}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/SecuritySettingsScreen.kt; Name=SecuritySettingsScreen.kt; Package=com.controlprestamos.app; Lines=176; Severity=OK; Category=ui-screen; FeatureGuess=security-reminders; Composables=1; Functions=1; Classes=0; Objects=0; Imports=24; Todos=0; NavMentions=5; SessionStoreMentions=18}.Package) | ui-screen | security-reminders | 1 | 1 | 0 | 0 |
-| 421 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionBackupTrashStore.kt; Name=SessionBackupTrashStore.kt; Package=com.controlprestamos.app; Lines=421; Severity=HIGH; Category=data-store; FeatureGuess=backup-trash; Composables=0; Functions=14; Classes=1; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/SessionBackupTrashStore.kt; Name=SessionBackupTrashStore.kt; Package=com.controlprestamos.app; Lines=421; Severity=HIGH; Category=data-store; FeatureGuess=backup-trash; Composables=0; Functions=14; Classes=1; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=0}.Package) | data-store | backup-trash | 0 | 14 | 1 | 0 |
-| 260 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionCatalogStore.kt; Name=SessionCatalogStore.kt; Package=com.controlprestamos.app; Lines=260; Severity=MEDIUM; Category=data-store; FeatureGuess=uncategorized; Composables=0; Functions=16; Classes=1; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/SessionCatalogStore.kt; Name=SessionCatalogStore.kt; Package=com.controlprestamos.app; Lines=260; Severity=MEDIUM; Category=data-store; FeatureGuess=uncategorized; Composables=0; Functions=16; Classes=1; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=0}.Package) | data-store | uncategorized | 0 | 16 | 1 | 0 |
-| 354 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionLoanStore.kt; Name=SessionLoanStore.kt; Package=com.controlprestamos.app; Lines=354; Severity=HIGH; Category=data-store; FeatureGuess=loans; Composables=0; Functions=22; Classes=1; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/SessionLoanStore.kt; Name=SessionLoanStore.kt; Package=com.controlprestamos.app; Lines=354; Severity=HIGH; Category=data-store; FeatureGuess=loans; Composables=0; Functions=22; Classes=1; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=0}.Package) | data-store | loans | 0 | 22 | 1 | 0 |
-| 183 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionProfileHistoryStore.kt; Name=SessionProfileHistoryStore.kt; Package=com.controlprestamos.app; Lines=183; Severity=OK; Category=data-store; FeatureGuess=loans; Composables=0; Functions=11; Classes=1; Objects=0; Imports=7; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/SessionProfileHistoryStore.kt; Name=SessionProfileHistoryStore.kt; Package=com.controlprestamos.app; Lines=183; Severity=OK; Category=data-store; FeatureGuess=loans; Composables=0; Functions=11; Classes=1; Objects=0; Imports=7; Todos=0; NavMentions=0; SessionStoreMentions=0}.Package) | data-store | loans | 0 | 11 | 1 | 0 |
-| 124 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionSecurityStore.kt; Name=SessionSecurityStore.kt; Package=com.controlprestamos.app; Lines=124; Severity=OK; Category=data-store; FeatureGuess=security-reminders; Composables=0; Functions=14; Classes=1; Objects=0; Imports=4; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/SessionSecurityStore.kt; Name=SessionSecurityStore.kt; Package=com.controlprestamos.app; Lines=124; Severity=OK; Category=data-store; FeatureGuess=security-reminders; Composables=0; Functions=14; Classes=1; Objects=0; Imports=4; Todos=0; NavMentions=0; SessionStoreMentions=0}.Package) | data-store | security-reminders | 0 | 14 | 1 | 0 |
-| 314 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionStore.kt; Name=SessionStore.kt; Package=com.controlprestamos.app; Lines=314; Severity=MEDIUM; Category=data-store; FeatureGuess=uncategorized; Composables=0; Functions=68; Classes=9; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=1}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/SessionStore.kt; Name=SessionStore.kt; Package=com.controlprestamos.app; Lines=314; Severity=MEDIUM; Category=data-store; FeatureGuess=uncategorized; Composables=0; Functions=68; Classes=9; Objects=0; Imports=5; Todos=0; NavMentions=0; SessionStoreMentions=1}.Package) | data-store | uncategorized | 0 | 68 | 9 | 0 |
-| 37 | $(@{File=app/src/main/java/com/controlprestamos/app/SessionTimeoutManager.kt; Name=SessionTimeoutManager.kt; Package=com.controlprestamos.app; Lines=37; Severity=OK; Category=manager; FeatureGuess=uncategorized; Composables=0; Functions=3; Classes=1; Objects=0; Imports=2; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/SessionTimeoutManager.kt; Name=SessionTimeoutManager.kt; Package=com.controlprestamos.app; Lines=37; Severity=OK; Category=manager; FeatureGuess=uncategorized; Composables=0; Functions=3; Classes=1; Objects=0; Imports=2; Todos=0; NavMentions=0; SessionStoreMentions=0}.Package) | manager | uncategorized | 0 | 3 | 1 | 0 |
-| 271 | $(@{File=app/src/main/java/com/controlprestamos/app/TrashScreen.kt; Name=TrashScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=backup-trash; Composables=3; Functions=7; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=5; SessionStoreMentions=7}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/TrashScreen.kt; Name=TrashScreen.kt; Package=com.controlprestamos.app; Lines=271; Severity=MEDIUM; Category=ui-screen; FeatureGuess=backup-trash; Composables=3; Functions=7; Classes=0; Objects=0; Imports=21; Todos=0; NavMentions=5; SessionStoreMentions=7}.Package) | ui-screen | backup-trash | 3 | 7 | 0 | 0 |
-| 307 | $(@{File=app/src/main/java/com/controlprestamos/app/WeeklyViewScreen.kt; Name=WeeklyViewScreen.kt; Package=com.controlprestamos.app; Lines=307; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=26; Todos=0; NavMentions=11; SessionStoreMentions=10}.File) | $(@{File=app/src/main/java/com/controlprestamos/app/WeeklyViewScreen.kt; Name=WeeklyViewScreen.kt; Package=com.controlprestamos.app; Lines=307; Severity=MEDIUM; Category=ui-screen; FeatureGuess=loans; Composables=3; Functions=3; Classes=0; Objects=0; Imports=26; Todos=0; NavMentions=11; SessionStoreMentions=10}.Package) | ui-screen | loans | 3 | 3 | 0 | 0 |
-| 6 | $(@{File=app/src/main/java/com/controlprestamos/LoanApp.kt; Name=LoanApp.kt; Package=com.controlprestamos; Lines=6; Severity=OK; Category=app-entry; FeatureGuess=loans; Composables=0; Functions=0; Classes=1; Objects=0; Imports=1; Todos=0; NavMentions=0; SessionStoreMentions=0}.File) | $(@{File=app/src/main/java/com/controlprestamos/LoanApp.kt; Name=LoanApp.kt; Package=com.controlprestamos; Lines=6; Severity=OK; Category=app-entry; FeatureGuess=loans; Composables=0; Functions=0; Classes=1; Objects=0; Imports=1; Todos=0; NavMentions=0; SessionStoreMentions=0}.Package) | app-entry | loans | 0 | 0 | 1 | 0 |
-| 62 | $(@{File=app/src/main/java/com/controlprestamos/MainActivity.kt; Name=MainActivity.kt; Package=com.controlprestamos; Lines=62; Severity=OK; Category=app-entry; FeatureGuess=app; Composables=0; Functions=0; Classes=1; Objects=0; Imports=9; Todos=0; NavMentions=5; SessionStoreMentions=9}.File) | $(@{File=app/src/main/java/com/controlprestamos/MainActivity.kt; Name=MainActivity.kt; Package=com.controlprestamos; Lines=62; Severity=OK; Category=app-entry; FeatureGuess=app; Composables=0; Functions=0; Classes=1; Objects=0; Imports=9; Todos=0; NavMentions=5; SessionStoreMentions=9}.Package) | app-entry | app | 0 | 0 | 1 | 0 |
+| 461 | `app/src/main/java/com/controlprestamos/app/AppDesign.kt` | `com.controlprestamos.app` | ui-core | core-ui | 16 | 15 | 0 | 2 |
+| 416 | `app/src/main/java/com/controlprestamos/app/AppFields.kt` | `com.controlprestamos.app` | ui-core | core-ui | 1 | 28 | 0 | 0 |
+| 102 | `app/src/main/java/com/controlprestamos/app/AppRoutes.kt` | `com.controlprestamos.app` | navigation | navigation | 0 | 0 | 0 | 1 |
+| 473 | `app/src/main/java/com/controlprestamos/app/BackupExportScreen.kt` | `com.controlprestamos.app` | ui-screen | backup-trash | 2 | 15 | 0 | 0 |
+| 312 | `app/src/main/java/com/controlprestamos/app/BlacklistScreen.kt` | `com.controlprestamos.app` | ui-screen | clients-profile | 1 | 5 | 0 | 0 |
+| 271 | `app/src/main/java/com/controlprestamos/app/CollectionAgendaScreen.kt` | `com.controlprestamos.app` | ui-screen | loans | 3 | 3 | 0 | 0 |
+| 273 | `app/src/main/java/com/controlprestamos/app/DailySummaryScreen.kt` | `com.controlprestamos.app` | ui-screen | loans | 4 | 7 | 0 | 0 |
+| 338 | `app/src/main/java/com/controlprestamos/app/DashboardScreen.kt` | `com.controlprestamos.app` | ui-screen | analytics-dashboard | 2 | 9 | 0 | 0 |
+| 363 | `app/src/main/java/com/controlprestamos/app/EditLoanScreen.kt` | `com.controlprestamos.app` | ui-screen | loans | 1 | 4 | 0 | 0 |
+| 227 | `app/src/main/java/com/controlprestamos/app/EditProfileScreen.kt` | `com.controlprestamos.app` | ui-screen | clients-profile | 1 | 1 | 0 | 0 |
+| 398 | `app/src/main/java/com/controlprestamos/app/FrequentUsersScreen.kt` | `com.controlprestamos.app` | ui-screen | clients-profile | 1 | 6 | 0 | 0 |
+| 280 | `app/src/main/java/com/controlprestamos/app/GlobalSearchScreen.kt` | `com.controlprestamos.app` | ui-screen | search | 1 | 5 | 0 | 0 |
+| 255 | `app/src/main/java/com/controlprestamos/app/HistoryScreen.kt` | `com.controlprestamos.app` | ui-screen | loans | 3 | 4 | 0 | 0 |
+| 455 | `app/src/main/java/com/controlprestamos/app/LoanCollectionNoticeScreen.kt` | `com.controlprestamos.app` | ui-screen | loans | 3 | 12 | 0 | 0 |
+| 467 | `app/src/main/java/com/controlprestamos/app/LoanDetailScreen.kt` | `com.controlprestamos.app` | ui-screen | loans | 4 | 6 | 0 | 0 |
+| 17 | `app/src/main/java/com/controlprestamos/app/LoanReminderBootReceiver.kt` | `com.controlprestamos.app` | android-receiver | loans | 0 | 0 | 1 | 0 |
+| 287 | `app/src/main/java/com/controlprestamos/app/LoanReminderManager.kt` | `com.controlprestamos.app` | manager | loans | 0 | 18 | 0 | 1 |
+| 12 | `app/src/main/java/com/controlprestamos/app/LoanReminderReceiver.kt` | `com.controlprestamos.app` | android-receiver | loans | 0 | 0 | 1 | 0 |
+| 574 | `app/src/main/java/com/controlprestamos/app/LoansScreen.kt` | `com.controlprestamos.app` | ui-screen | loans | 6 | 19 | 0 | 0 |
+| 224 | `app/src/main/java/com/controlprestamos/app/LockScreen.kt` | `com.controlprestamos.app` | ui-screen | security-reminders | 1 | 1 | 0 | 1 |
+| 296 | `app/src/main/java/com/controlprestamos/app/MonthlyViewScreen.kt` | `com.controlprestamos.app` | ui-screen | loans | 3 | 3 | 0 | 0 |
+| 283 | `app/src/main/java/com/controlprestamos/app/MoreScreen.kt` | `com.controlprestamos.app` | ui-screen | uncategorized | 6 | 4 | 0 | 0 |
+| 268 | `app/src/main/java/com/controlprestamos/app/NavGraph.kt` | `com.controlprestamos.app` | navigation | navigation | 1 | 3 | 0 | 0 |
+| 338 | `app/src/main/java/com/controlprestamos/app/NewLoanScreen.kt` | `com.controlprestamos.app` | ui-screen | loans | 1 | 4 | 0 | 0 |
+| 109 | `app/src/main/java/com/controlprestamos/app/PrivacyPolicyScreen.kt` | `com.controlprestamos.app` | ui-screen | uncategorized | 1 | 1 | 0 | 0 |
+| 188 | `app/src/main/java/com/controlprestamos/app/ProfileScreen.kt` | `com.controlprestamos.app` | ui-screen | clients-profile | 2 | 2 | 0 | 0 |
+| 545 | `app/src/main/java/com/controlprestamos/app/ReferralsScreen.kt` | `com.controlprestamos.app` | ui-screen | clients-profile | 4 | 10 | 0 | 0 |
+| 261 | `app/src/main/java/com/controlprestamos/app/ReminderSettingsScreen.kt` | `com.controlprestamos.app` | ui-screen | security-reminders | 1 | 2 | 0 | 0 |
+| 218 | `app/src/main/java/com/controlprestamos/app/ReportsScreen.kt` | `com.controlprestamos.app` | ui-screen | analytics-dashboard | 2 | 2 | 0 | 0 |
+| 420 | `app/src/main/java/com/controlprestamos/app/RestoreBackupScreen.kt` | `com.controlprestamos.app` | ui-screen | backup-trash | 1 | 12 | 0 | 0 |
+| 176 | `app/src/main/java/com/controlprestamos/app/SecuritySettingsScreen.kt` | `com.controlprestamos.app` | ui-screen | security-reminders | 1 | 1 | 0 | 0 |
+| 421 | `app/src/main/java/com/controlprestamos/app/SessionBackupTrashStore.kt` | `com.controlprestamos.app` | data-store | backup-trash | 0 | 14 | 1 | 0 |
+| 260 | `app/src/main/java/com/controlprestamos/app/SessionCatalogStore.kt` | `com.controlprestamos.app` | data-store | uncategorized | 0 | 16 | 1 | 0 |
+| 354 | `app/src/main/java/com/controlprestamos/app/SessionLoanStore.kt` | `com.controlprestamos.app` | data-store | loans | 0 | 22 | 1 | 0 |
+| 183 | `app/src/main/java/com/controlprestamos/app/SessionProfileHistoryStore.kt` | `com.controlprestamos.app` | data-store | loans | 0 | 11 | 1 | 0 |
+| 124 | `app/src/main/java/com/controlprestamos/app/SessionSecurityStore.kt` | `com.controlprestamos.app` | data-store | security-reminders | 0 | 14 | 1 | 0 |
+| 314 | `app/src/main/java/com/controlprestamos/app/SessionStore.kt` | `com.controlprestamos.app` | data-store | uncategorized | 0 | 68 | 9 | 0 |
+| 37 | `app/src/main/java/com/controlprestamos/app/SessionTimeoutManager.kt` | `com.controlprestamos.app` | manager | uncategorized | 0 | 3 | 1 | 0 |
+| 271 | `app/src/main/java/com/controlprestamos/app/TrashScreen.kt` | `com.controlprestamos.app` | ui-screen | backup-trash | 3 | 7 | 0 | 0 |
+| 307 | `app/src/main/java/com/controlprestamos/app/WeeklyViewScreen.kt` | `com.controlprestamos.app` | ui-screen | loans | 3 | 3 | 0 | 0 |
+| 6 | `app/src/main/java/com/controlprestamos/LoanApp.kt` | `com.controlprestamos` | app-entry | loans | 0 | 0 | 1 | 0 |
+| 62 | `app/src/main/java/com/controlprestamos/MainActivity.kt` | `com.controlprestamos` | app-entry | app | 0 | 0 | 1 | 0 |
