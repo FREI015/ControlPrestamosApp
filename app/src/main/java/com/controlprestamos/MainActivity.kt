@@ -1,12 +1,16 @@
 package com.controlprestamos
 
+import com.controlprestamos.core.navigation.*
+
+import com.controlprestamos.core.design.*
+
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
-import com.controlprestamos.app.AppNavGraph
+import com.controlprestamos.core.navigation.AppNavGraph
 import com.controlprestamos.app.SessionStore
 import com.controlprestamos.app.SessionTimeoutManager
 

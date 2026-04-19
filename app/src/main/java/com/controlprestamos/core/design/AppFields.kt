@@ -1,4 +1,8 @@
-package com.controlprestamos.app
+package com.controlprestamos.core.design
+
+import com.controlprestamos.core.navigation.*
+
+import com.controlprestamos.app.*
 
 import android.app.DatePickerDialog
 import android.content.Context

@@ -1,5 +1,9 @@
 package com.controlprestamos.app
 
+import com.controlprestamos.core.navigation.*
+
+import com.controlprestamos.core.design.*
+
 import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -569,5 +573,3 @@ private fun buildLoanDeleteMessageRefined(loan: ManualLoanData?): String {
     val name = loan.fullName.ifBlank { "este préstamo" }
     return "¿Seguro que deseas eliminar el préstamo de $name? Esta acción no se puede deshacer."
 }
-
-

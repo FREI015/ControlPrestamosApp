@@ -1,5 +1,9 @@
 package com.controlprestamos.app
 
+import com.controlprestamos.core.navigation.*
+
+import com.controlprestamos.core.design.*
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -269,4 +273,3 @@ private fun parseDailyDateSafe(value: String): LocalDate? {
         null
     }
 }
-

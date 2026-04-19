@@ -1,4 +1,4 @@
-package com.controlprestamos.app
+package com.controlprestamos.core.navigation
 
 object AppRoutes {
     const val Dashboard = "dashboard"
@@ -88,14 +88,3 @@ object AppRoutes {
     const val LOCK_SCREEN = LockScreen
     const val Lock = LockScreen
 }
-
-
-
-
-
-
-
-
-
-
-

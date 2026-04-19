@@ -1,5 +1,9 @@
 package com.controlprestamos.app
 
+import com.controlprestamos.core.navigation.*
+
+import com.controlprestamos.core.design.*
+
 import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject

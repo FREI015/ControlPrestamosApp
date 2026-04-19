@@ -1,5 +1,9 @@
 package com.controlprestamos.app
 
+import com.controlprestamos.core.navigation.*
+
+import com.controlprestamos.core.design.*
+
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -469,4 +473,3 @@ private fun csvCell(value: String): String {
 private fun formatPlainNumber(value: Double): String {
     return String.format(Locale.US, "%.2f", value)
 }
-

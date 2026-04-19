@@ -1,5 +1,9 @@
 package com.controlprestamos.app
 
+import com.controlprestamos.core.navigation.*
+
+import com.controlprestamos.core.design.*
+
 import android.content.SharedPreferences
 import android.util.Base64
 import java.security.MessageDigest

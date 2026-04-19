@@ -1,4 +1,8 @@
-package com.controlprestamos.app
+package com.controlprestamos.core.navigation
+
+import com.controlprestamos.core.design.*
+
+import com.controlprestamos.app.*
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -254,14 +258,3 @@ fun AppNavGraph(
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-

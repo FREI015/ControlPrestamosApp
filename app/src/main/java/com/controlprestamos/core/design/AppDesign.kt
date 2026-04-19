@@ -1,4 +1,8 @@
-package com.controlprestamos.app
+package com.controlprestamos.core.design
+
+import com.controlprestamos.core.navigation.*
+
+import com.controlprestamos.app.*
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
