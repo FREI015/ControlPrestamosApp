@@ -1,4 +1,4 @@
-﻿package com.controlprestamos.app
+package com.controlprestamos.app
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

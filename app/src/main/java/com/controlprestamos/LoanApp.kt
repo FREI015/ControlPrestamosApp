@@ -1,4 +1,4 @@
-﻿package com.controlprestamos
+package com.controlprestamos
 
 import android.app.Application
 

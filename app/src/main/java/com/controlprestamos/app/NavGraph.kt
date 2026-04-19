@@ -1,4 +1,4 @@
-﻿package com.controlprestamos.app
+package com.controlprestamos.app
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme

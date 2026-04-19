@@ -1,4 +1,4 @@
-﻿package com.controlprestamos.app
+package com.controlprestamos.app
 
 import android.app.DatePickerDialog
 import android.content.Context

@@ -1,4 +1,4 @@
-﻿package com.controlprestamos.app
+package com.controlprestamos.app
 
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt

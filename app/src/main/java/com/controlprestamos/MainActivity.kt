@@ -1,4 +1,4 @@
-﻿package com.controlprestamos
+package com.controlprestamos
 
 import android.os.Bundle
 import android.view.WindowManager

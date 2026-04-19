@@ -1,4 +1,4 @@
-﻿package com.controlprestamos.app
+package com.controlprestamos.app
 
 object AppRoutes {
     const val Dashboard = "dashboard"

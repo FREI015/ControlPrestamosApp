@@ -1,4 +1,4 @@
-﻿package com.controlprestamos.app
+package com.controlprestamos.app
 
 import android.content.ClipData
 import android.content.ClipboardManager
