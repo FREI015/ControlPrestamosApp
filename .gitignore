@@ -37,3 +37,7 @@ app/release/
 _respaldo_*/
 _historial_*/
 .kotlin/
+
+.tmp-*
+
+.tmp-*
