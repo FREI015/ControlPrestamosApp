@@ -1,5 +1,7 @@
 package com.controlprestamos.core.design
 
+import com.controlprestamos.core.format.*
+import com.controlprestamos.core.validation.*
 import com.controlprestamos.features.profile.*
 
 import com.controlprestamos.features.loans.*
