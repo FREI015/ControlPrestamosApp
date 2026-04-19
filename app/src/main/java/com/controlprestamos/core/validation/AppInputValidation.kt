@@ -1,5 +1,7 @@
 package com.controlprestamos.core.validation
 
+import com.controlprestamos.features.profile.*
+
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 

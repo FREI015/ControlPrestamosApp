@@ -1,5 +1,7 @@
 package com.controlprestamos.features.loans
 
+import com.controlprestamos.features.profile.*
+
 import com.controlprestamos.core.format.*
 
 import com.controlprestamos.app.*

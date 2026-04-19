@@ -1,5 +1,7 @@
 package com.controlprestamos.core.format
 
+import com.controlprestamos.features.profile.*
+
 import java.util.Locale
 
 fun formatMoney(value: Double, currencySymbol: String = "$"): String {
