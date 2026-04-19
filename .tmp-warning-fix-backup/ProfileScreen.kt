@@ -26,7 +26,9 @@ import androidx.navigation.NavController
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    sessionStore: SessionStore
+    sessionStore: SessionStore,
+    onThemeChanged: (Boolean) -> Unit,
+    onLockRequested: () -> Unit
 ) {
     val profile = sessionStore.readProfile()
 

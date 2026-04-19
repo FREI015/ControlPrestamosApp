@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 import java.util.Locale
@@ -43,6 +44,7 @@ private data class DashboardPeriodSummary(
 
 @Composable
 fun DashboardScreen(
+    navController: NavController,
     sessionStore: SessionStore
 ) {
     val loans = sessionStore.readLoans()

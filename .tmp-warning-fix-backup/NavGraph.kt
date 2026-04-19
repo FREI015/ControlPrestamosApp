@@ -65,6 +65,7 @@ fun AppNavGraph(
                 ) {
                     composable(AppRoutes.Dashboard) {
                         DashboardScreen(
+                            navController = navController,
                             sessionStore = sessionStore
                         )
                     }
@@ -172,7 +173,12 @@ fun AppNavGraph(
                     composable(AppRoutes.Profile) {
                         ProfileScreen(
                             navController = navController,
-                            sessionStore = sessionStore
+                            sessionStore = sessionStore,
+                            onThemeChanged = {
+                                sessionStore.setDarkMode(it)
+                                darkMode = it
+                            },
+                            onLockRequested = { lockApp() }
                         )
                     }
 
@@ -232,6 +238,7 @@ fun AppNavGraph(
                     composable(AppRoutes.LockScreen) {
                         LockScreen(
                             activity = activity,
+                            navController = navController,
                             sessionStore = sessionStore,
                             onUnlockSuccess = { unlockApp() }
                         )
@@ -245,10 +252,11 @@ fun AppNavGraph(
             ) {
                 composable(AppRoutes.LockScreen) {
                     LockScreen(
-                            activity = activity,
-                            sessionStore = sessionStore,
-                            onUnlockSuccess = { unlockApp() }
-                        )
+                        activity = activity,
+                        navController = navController,
+                        sessionStore = sessionStore,
+                        onUnlockSuccess = { unlockApp() }
+                    )
                 }
             }
         }
