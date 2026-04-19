@@ -1,4 +1,6 @@
-package com.controlprestamos.app
+package com.controlprestamos.features.loans
+
+import com.controlprestamos.app.*
 
 import com.controlprestamos.core.navigation.*
 
@@ -22,42 +24,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import java.time.LocalDate
 
 @Composable
-fun EditLoanScreen(
+fun NewLoanScreen(
     navController: NavController,
     sessionStore: SessionStore
 ) {
-    val loan = sessionStore.readActiveLoan()
-
-    if (loan == null) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            AppTopBack(title = "Editar préstamo", onBack = { navController.popBackStack() })
-            AppSectionCard { Text("No hay un préstamo seleccionado.") }
-            AppBottomBack(onClick = { navController.popBackStack() })
-        }
-        return
-    }
-
     val frequentUsers = remember { sessionStore.readFrequentUsers() }
-    val paymentHistory = remember(loan.id) { sessionStore.readLoanPaymentHistory(loan.id) }
 
     var frequentSearch by remember { mutableStateOf("") }
 
-    var fullName by remember { mutableStateOf(loan.fullName) }
-    var idNumber by remember { mutableStateOf(loan.idNumber) }
-    var phone by remember { mutableStateOf(loan.phone) }
-    var loanAmount by remember { mutableStateOf(String.format(java.util.Locale.US, "%.2f", loan.loanAmount)) }
-    var percent by remember { mutableStateOf(String.format(java.util.Locale.US, "%.2f", loan.percent)) }
-    var loanDate by remember { mutableStateOf(loan.loanDate) }
-    var dueDate by remember { mutableStateOf(loan.dueDate) }
-    var exchangeRate by remember { mutableStateOf(loan.exchangeRate) }
-    var conditions by remember { mutableStateOf(loan.conditions) }
+    var fullName by remember { mutableStateOf("") }
+    var idNumber by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var loanAmount by remember { mutableStateOf("") }
+    var percent by remember { mutableStateOf("50") }
+    var loanDate by remember { mutableStateOf(LocalDate.now().toString()) }
+    var dueDate by remember { mutableStateOf(LocalDate.now().toString()) }
+    var exchangeRate by remember { mutableStateOf("") }
+    var conditions by remember { mutableStateOf("") }
 
     var errorMessage by remember { mutableStateOf("") }
 
@@ -97,7 +83,7 @@ fun EditLoanScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         AppTopBack(
-            title = "Editar préstamo",
+            title = "Nuevo préstamo",
             onBack = { navController.popBackStack() }
         )
 
@@ -107,21 +93,15 @@ fun EditLoanScreen(
             }
         }
 
-        if (paymentHistory.isNotEmpty() || loan.paidAmount > 0.0) {
-            AppSectionCard {
-                Text("Abonos registrados")
-                AppMutedText("Pagado acumulado: ${formatMoney(loan.paidAmount)}")
-                AppMutedText("Pendiente actual: ${formatMoney(loan.pendingAmount())}")
-                AppMutedText("Movimientos de pago: ${paymentHistory.size}")
-                AppMutedText("Regla aplicada: puedes editar monto, porcentaje o fechas, pero el nuevo total no puede quedar por debajo de lo ya abonado.")
-            }
-        }
-
         AppSectionCard {
             Text("Usuarios frecuentes")
 
             if (frequentUsers.isEmpty()) {
                 AppMutedText("No tienes usuarios frecuentes guardados todavía.")
+                AppSecondaryButton(
+                    text = "Ir a usuarios frecuentes",
+                    onClick = { navController.navigate("frequentUsers") }
+                )
             } else {
                 OutlinedTextField(
                     value = frequentSearch,
@@ -133,7 +113,7 @@ fun EditLoanScreen(
                     singleLine = true
                 )
 
-                AppMutedText("Puedes reemplazar datos del cliente y reutilizar referencias de pago.")
+                AppMutedText("Puedes cargar nombre, cédula, teléfono y referencias de pago.")
 
                 filteredFrequentUsers.take(8).forEachIndexed { index, user ->
                     if (index > 0) {
@@ -266,15 +246,13 @@ fun EditLoanScreen(
         }
 
         AppSectionCard {
-            Text("Resumen recalculado")
+            Text("Resumen estimado")
             AppMutedText("Interés proyectado: ${formatMoney(projectedInterest)}")
-            AppMutedText("Nuevo total a cobrar: ${formatMoney(projectedTotal)}")
-            AppMutedText("Ya abonado: ${formatMoney(loan.paidAmount)}")
-            AppMutedText("Pendiente recalculado: ${formatMoney((projectedTotal - loan.paidAmount).coerceAtLeast(0.0))}")
+            AppMutedText("Total a cobrar: ${formatMoney(projectedTotal)}")
         }
 
         AppPrimaryButton(
-            text = "Guardar cambios",
+            text = "Guardar préstamo",
             onClick = {
                 val cleanName = normalizeTextInput(fullName).trim()
                 val cleanIdNumber = sanitizeIntegerInput(idNumber)
@@ -296,8 +274,7 @@ fun EditLoanScreen(
                     loanDate = loanDate,
                     dueDate = dueDate,
                     exchangeRate = cleanExchangeRate,
-                    conditions = cleanConditions,
-                    existingPaidAmount = loan.paidAmount
+                    conditions = cleanConditions
                 )
 
                 when {
@@ -311,7 +288,7 @@ fun EditLoanScreen(
 
                     else -> {
                         sessionStore.saveLoan(
-                            loan.copy(
+                            ManualLoanData(
                                 fullName = cleanName,
                                 idNumber = cleanIdNumber,
                                 phone = cleanPhone,

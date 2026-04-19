@@ -1,5 +1,7 @@
 package com.controlprestamos
 
+import com.controlprestamos.features.loans.*
+
 import com.controlprestamos.core.navigation.*
 
 import com.controlprestamos.core.design.*

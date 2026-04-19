@@ -1,5 +1,7 @@
 package com.controlprestamos.core.navigation
 
+import com.controlprestamos.features.loans.*
+
 object AppRoutes {
     const val Dashboard = "dashboard"
     const val DASHBOARD = Dashboard

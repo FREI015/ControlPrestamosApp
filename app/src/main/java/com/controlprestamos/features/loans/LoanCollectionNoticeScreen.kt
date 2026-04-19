@@ -1,4 +1,6 @@
-package com.controlprestamos.app
+package com.controlprestamos.features.loans
+
+import com.controlprestamos.app.*
 
 import com.controlprestamos.core.navigation.*
 

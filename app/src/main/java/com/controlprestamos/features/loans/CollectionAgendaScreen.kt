@@ -1,11 +1,12 @@
-package com.controlprestamos.app
+package com.controlprestamos.features.loans
+
+import com.controlprestamos.app.*
 
 import com.controlprestamos.core.navigation.*
 
 import com.controlprestamos.core.design.*
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -27,65 +28,37 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import java.time.LocalDate
 
-private const val MONTH_ORDER_CREATED = "CREADOS"
-private const val MONTH_ORDER_DUE = "VENCEN"
-private const val MONTH_ORDER_PENDING = "PENDIENTE"
-
 @Composable
-fun MonthlyViewScreen(
+fun CollectionAgendaScreen(
     navController: NavController,
     sessionStore: SessionStore
 ) {
     var selectedDate by remember { mutableStateOf(LocalDate.now().toString()) }
-    var orderMode by remember { mutableStateOf(MONTH_ORDER_DUE) }
+    var feedback by remember { mutableStateOf("") }
 
-    val monthDate = parseIsoDateOrNull(selectedDate)
-    val loans = sessionStore.readLoans()
-    val allPayments = loans.flatMap { sessionStore.readLoanPaymentHistory(it.id) }
+    val targetDate = parseIsoDateOrNull(selectedDate)
+    val activeLoans = remember(selectedDate, feedback) {
+        sessionStore.readLoans().filter { it.status == "ACTIVO" }
+    }
 
-    val loansCreatedInMonth = if (monthDate != null) {
-        loans.filter { loan ->
-            val date = parseIsoDateOrNull(loan.loanDate)
-            date != null && date.year == monthDate.year && date.month == monthDate.month
-        }
+    val dueThatDay = if (targetDate != null) {
+        activeLoans.filter { parseIsoDateOrNull(it.dueDate) == targetDate }
+            .sortedByDescending { it.pendingAmount() }
     } else {
         emptyList()
     }
 
-    val dueInMonth = if (monthDate != null) {
-        loans.filter { loan ->
-            val date = parseIsoDateOrNull(loan.dueDate)
-            date != null && date.year == monthDate.year && date.month == monthDate.month
-        }
+    val overdueBeforeThatDay = if (targetDate != null) {
+        activeLoans.filter {
+            val due = parseIsoDateOrNull(it.dueDate)
+            due != null && due.isBefore(targetDate)
+        }.sortedByDescending { it.pendingAmount() }
     } else {
         emptyList()
     }
 
-    val paymentsInMonth = if (monthDate != null) {
-        allPayments.filter { payment ->
-            val date = parseIsoDateOrNull(payment.paymentDate)
-            date != null && date.year == monthDate.year && date.month == monthDate.month
-        }
-    } else {
-        emptyList()
-    }
-
-    val orderedDueInMonth = when (orderMode) {
-        MONTH_ORDER_CREATED -> dueInMonth.sortedByDescending { it.createdAt }
-        MONTH_ORDER_PENDING -> dueInMonth.sortedByDescending { it.pendingAmount() }
-        else -> dueInMonth.sortedBy { parseIsoDateOrNull(it.dueDate) ?: LocalDate.MAX }
-    }
-
-    val createdCapital = loansCreatedInMonth.sumOf { it.loanAmount }
-    val dueExpected = dueInMonth.filter { it.status != "PERDIDO" }.sumOf { it.totalAmount() }
-    val duePending = dueInMonth.filter { it.status != "PERDIDO" }.sumOf { it.pendingAmount() }
-    val paidInMonth = paymentsInMonth.sumOf { it.amount }
-
-    val monthLabel = if (monthDate != null) {
-        "${monthDate.month.name.lowercase().replaceFirstChar { it.uppercase() }} ${monthDate.year}"
-    } else {
-        "Mes no válido"
-    }
+    val pendingForThatDay = dueThatDay.sumOf { it.pendingAmount() }
+    val pendingOverdue = overdueBeforeThatDay.sumOf { it.pendingAmount() }
 
     Column(
         modifier = Modifier
@@ -95,29 +68,42 @@ fun MonthlyViewScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         AppTopBack(
-            title = "Vista mensual",
+            title = "Agenda de cobros",
             onBack = { navController.popBackStack() }
         )
 
+        if (feedback.isNotBlank()) {
+            AppSectionCard {
+                Text(feedback)
+            }
+        }
+
         AppSectionCard {
             Text(
-                text = "Mes de análisis",
+                text = "Fecha objetivo",
                 style = MaterialTheme.typography.titleMedium
             )
 
             AppDateField(
                 value = selectedDate,
-                label = "Selecciona una fecha del mes",
+                label = "Fecha a revisar *",
                 modifier = Modifier.fillMaxWidth(),
-                onDateSelected = { selectedDate = it }
+                onDateSelected = {
+                    selectedDate = it
+                    feedback = ""
+                }
             )
 
-            AppMutedText("Mes actual: $monthLabel")
+            if (targetDate == null) {
+                AppMutedText("Selecciona una fecha válida.")
+            } else {
+                AppMutedText("Mostrando agenda para: $selectedDate")
+            }
         }
 
         AppSectionCard {
             Text(
-                text = "Resumen mensual",
+                text = "Resumen",
                 style = MaterialTheme.typography.titleMedium
             )
 
@@ -128,18 +114,13 @@ fun MonthlyViewScreen(
 
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        MonthlyMetricCard("Préstamos creados", loansCreatedInMonth.size.toString(), Modifier.width(cardWidth))
-                        MonthlyMetricCard("Vencimientos", dueInMonth.size.toString(), Modifier.width(cardWidth))
+                        AgendaMetricCard("Vencen ese día", dueThatDay.size.toString(), Modifier.width(cardWidth))
+                        AgendaMetricCard("Pendiente del día", formatMoney(pendingForThatDay), Modifier.width(cardWidth))
                     }
 
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        MonthlyMetricCard("Capital", formatMoney(createdCapital), Modifier.width(cardWidth))
-                        MonthlyMetricCard("Total esperado", formatMoney(dueExpected), Modifier.width(cardWidth))
-                    }
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        MonthlyMetricCard("Pagado en mes", formatMoney(paidInMonth), Modifier.width(cardWidth))
-                        MonthlyMetricCard("Pendiente del mes", formatMoney(duePending), Modifier.width(cardWidth))
+                        AgendaMetricCard("Vencidos previos", overdueBeforeThatDay.size.toString(), Modifier.width(cardWidth))
+                        AgendaMetricCard("Pendiente vencido", formatMoney(pendingOverdue), Modifier.width(cardWidth))
                     }
                 }
             }
@@ -147,47 +128,52 @@ fun MonthlyViewScreen(
 
         AppSectionCard {
             Text(
-                text = "Orden",
+                text = "Cobros del día",
                 style = MaterialTheme.typography.titleMedium
             )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                AppFilterChip("Vencimiento", orderMode == MONTH_ORDER_DUE) {
-                    orderMode = MONTH_ORDER_DUE
-                }
-                AppFilterChip("Creación", orderMode == MONTH_ORDER_CREATED) {
-                    orderMode = MONTH_ORDER_CREATED
-                }
-                AppFilterChip("Pendiente", orderMode == MONTH_ORDER_PENDING) {
-                    orderMode = MONTH_ORDER_PENDING
-                }
-            }
-        }
-
-        AppSectionCard {
-            Text(
-                text = "Casos del mes",
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            if (orderedDueInMonth.isEmpty()) {
-                AppMutedText("No hay préstamos que venzan en ese mes.")
+            if (dueThatDay.isEmpty()) {
+                AppMutedText("No hay préstamos que venzan en esa fecha.")
             } else {
-                orderedDueInMonth.forEachIndexed { index, loan ->
+                dueThatDay.forEachIndexed { index, loan ->
                     if (index > 0) {
                         HorizontalDivider()
                     }
 
-                    MonthlyLoanCard(
+                    AgendaLoanCard(
                         loan = loan,
+                        tag = "Vence ese día",
                         navController = navController,
                         sessionStore = sessionStore
                     )
+                }
+            }
+        }
+
+        AppSectionCard {
+            Text(
+                text = "Vencidos previos",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            if (overdueBeforeThatDay.isEmpty()) {
+                AppMutedText("No hay préstamos vencidos antes de esa fecha.")
+            } else {
+                overdueBeforeThatDay.take(20).forEachIndexed { index, loan ->
+                    if (index > 0) {
+                        HorizontalDivider()
+                    }
+
+                    AgendaLoanCard(
+                        loan = loan,
+                        tag = "Vencido",
+                        navController = navController,
+                        sessionStore = sessionStore
+                    )
+                }
+
+                if (overdueBeforeThatDay.size > 20) {
+                    AppMutedText("Se muestran los primeros 20 registros vencidos.")
                 }
             }
         }
@@ -197,7 +183,7 @@ fun MonthlyViewScreen(
 }
 
 @Composable
-private fun MonthlyMetricCard(
+private fun AgendaMetricCard(
     title: String,
     value: String,
     modifier: Modifier = Modifier
@@ -221,8 +207,9 @@ private fun MonthlyMetricCard(
 }
 
 @Composable
-private fun MonthlyLoanCard(
+private fun AgendaLoanCard(
     loan: ManualLoanData,
+    tag: String,
     navController: NavController,
     sessionStore: SessionStore
 ) {
@@ -242,18 +229,10 @@ private fun MonthlyLoanCard(
                 if (loan.phone.isNotBlank()) {
                     AppMutedText("Teléfono: ${loan.phone}")
                 }
-                AppMutedText("Préstamo: ${loan.loanDate.ifBlank { "-" }}")
-                AppMutedText("Vence: ${loan.dueDate.ifBlank { "-" }}")
+                AppMutedText("Vencimiento: ${loan.dueDate.ifBlank { "-" }}")
             }
 
-            AppStatusChip(
-                when {
-                    loan.status == "COBRADO" -> "Cobrado"
-                    loan.status == "PERDIDO" -> "Perdido"
-                    loan.isOverdue() -> "Vencido"
-                    else -> "Activo"
-                }
-            )
+            AppStatusChip(tag)
         }
 
         BoxWithConstraints(
@@ -261,11 +240,9 @@ private fun MonthlyLoanCard(
         ) {
             val cardWidth = (maxWidth - 12.dp) / 2
 
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    MonthlyMetricCard("Total", formatMoney(loan.totalAmount()), Modifier.width(cardWidth))
-                    MonthlyMetricCard("Pendiente", formatMoney(loan.pendingAmount()), Modifier.width(cardWidth))
-                }
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                AgendaMetricCard("Pendiente", formatMoney(loan.pendingAmount()), Modifier.width(cardWidth))
+                AgendaMetricCard("Total", formatMoney(loan.totalAmount()), Modifier.width(cardWidth))
             }
         }
 
